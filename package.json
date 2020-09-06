@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "license": "UNLICENSED",
   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "next build",
     "build:contract": "asb",
     "build:contract:debug": "asb --target debug",
@@ -14,8 +15,7 @@
     "prestart": "npm run build:contract:debug && npm run dev:deploy:contract",
     "start": "next start",
     "dev": "next",
-    "export": "next export",
-    "test": "npm run build:contract:debug && asp --nologo && jest test --runInBand"
+    "export": "next export"
   },
   "devDependencies": {
     "@babel/core": "^7.10.4",
