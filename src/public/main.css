@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Domine:wght@400;700&family=Karla:ital,wght@0,400;0,700;1,400;1,700&family=Rubik:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,200;0,400;0,700;0,900;1,200;1,400;1,700;1,900&family=Oswald:wght@200;300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,800;1,400;1,700;1,800&family=Raleway:ital,wght@0,200;0,400;0,700;0,900;1,200;1,400;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200;0,400;0,900;1,200;1,400;1,900&display=swap');
+
+
+/*----------------------------------
+Kresky Fonts
+----------------------------------*/
+.font-nunito,span body, p {
+  font-family: 'Nunito', sans-serif !important;   
+}
+
+
+/*----------------------------------
+Lendicore Fonts
+----------------------------------*/
+.font-karla {
+  font-family: 'Karla', sans-serif !important;   
+}
+
+.font-rubik, h1, h2, h3, h4, h5, h6 {
+  font-family: 'Rubik', sans-serif !important;   
+}
+.font-domine {
+  font-family: 'Domine', serif !important;
+}
+
+
+/*----------------------------------
+selfrow Fonts
+----------------------------------*/
+.font-montserrat{
+  font-family: 'Montserrat', sans-serif !important;   
+}
+
+.font-playfair-d{
+  font-family: 'Playfair Display', serif !important;  
+}
+.font-raleway {
+  font-family: 'Raleway', sans-serif !important;
+}
+
+a {
+  color: #016367 !important;
+  /* text-decoration: underline; */
+}
+
+.k-green {
+  color: #016367 !important;
+}
+
+.nav-font{
+  font-size: 2em;
+  color: #0B1C48 !important;
+}
+
+.nav-font:hover {
+  color: #EC440C !important;
+}
+
+.nav-blur {
+   /* Add the blur effect */
+  /* backdrop-filter: blur(8px);
+  background-color: rgba(216, 156, 96, .7) */
+}
+/* .footer{
+  position: fixed;
+  bottom: 0;
+} */
+
+.home-hero {
+  font-size: 12vw;
+  font-weight: 900;
+}
+
+@media (max-width: 769.9px) {
+ .home-hero {
+  font-size: 17vw !important;
+  }
+  html,body
+  {
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    overflow-x: hidden; 
+  } 
+}
+
+html,body, body > div:first-child, div#__next, div#__next > div, div#__next > div > div {
+  overflow-x: hidden; 
+}
+
+html,body {
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+}
+.heading-responsive-large {
+  font-size: 300%;
+}
+
+#profile-v1 .cascading-admin-card .admin-up .fa {
+  margin-right: 1rem;
+}
+
+#profile-v1 .user-card .admin-up .data span {
+  font-size: 15px;
+}
+#profile-v1 .profile-card p, .user-card .about-text h4 {
+  font-weight: 300;
+}
