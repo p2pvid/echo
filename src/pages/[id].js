@@ -12,7 +12,6 @@ import {
 	MDBCollapse,
 } from 'mdbreact';
 import Layout from '../Components/Layout';
-import { render } from 'react-dom';
 
 class CardExample extends Component {
 	state = {
