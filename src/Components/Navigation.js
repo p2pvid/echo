@@ -54,7 +54,7 @@ class NavbarPage extends Component {
 					<MDBNavbarBrand className="white-text py-0">
 						<Link href="/">
 							<a>
-								<h2 className="">K</h2>
+								<h2 className="">E</h2>
 							</a>
 						</Link>
 					</MDBNavbarBrand>

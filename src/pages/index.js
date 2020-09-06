@@ -17,7 +17,7 @@ const HomePage = () => {
 					<MDBRow className="mx-lg-5">
 						<MDBCol>
 							<MDBJumbotron className="z-depth-0">
-								<h2 className="h1 display-3 font-weight-bold">Welcome to Kresky</h2>
+								<h2 className="h1 display-3 font-weight-bold">Welcome to Echo</h2>
 								<p className="lead">The easiest way to Offer Wares, Contribute, Subscribe, and More on the Open Web.</p>
 
 								<p>Using web3 technologies!</p>
