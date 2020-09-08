@@ -1,40 +1,87 @@
-/*
- * This is an example of an AssemblyScript smart contract with two simple,
- * symmetric functions:
- *
- * 1. setGreeting: accepts a greeting, such as "howdy", and records it for the
- *    user (account_id) who sent the request
- * 2. getGreeting: accepts an account_id and returns the greeting saved for it,
- *    defaulting to "Hello"
- *
- * Learn more about writing NEAR smart contracts with AssemblyScript:
- * https://docs.near.org/docs/roles/developer/contracts/assemblyscript
- *
- */
+import { Context, logging, storage, base64, math } from 'near-sdk-as';
+import {
+  Tier,
+  TiersList,
+  tiers,
+  tiersByCreator,
+  displayTiers,
+} from './model';
 
-import { Context, logging, storage } from "near-sdk-as";
+const RNJ_DIGITS: u32 = 16;
 
-const DEFAULT_MESSAGE = "Hello"
+// *********************************************************
 
-// Exported functions will be part of the public interface for your smart contract.
-// Feel free to extract behavior to non-exported functions!
-export function getGreeting(accountId: string): string | null {
-  // This uses raw `storage.get`, a low-level way to interact with on-chain
-  // storage for simple contracts.
-  // If you have something more complex, check out persistent collections:
-  // https://docs.near.org/docs/roles/developer/contracts/assemblyscript#imports
-  return storage.get<string>(accountId, DEFAULT_MESSAGE);
+// //Methods for creator
+export function getTiersList(creator: string): Tier[] {
+  let tierIdList = getTiersList(creator);
+  let tiersList = new Array<Tier>();
+
+	return tiersList;
 }
 
-export function setGreeting(message: string): void {
-  const account_id = Context.sender;
+// Methods for Tier
 
-  // Use logging.log to record logs permanently to the blockchain!
-  logging.log(
-    // String interpolation (`like ${this}`) is a work in progress:
-    // https://github.com/AssemblyScript/assemblyscript/pull/1115
-    'Saving greeting "' + message + '" for account "' + account_id + '"'
+export function getTier(id: string): Tier {
+  const rnj = base64.decode(id)
+  return tiers.getSome(rnj)
+}
+
+
+
+
+// display global tiers
+export function displayGlobalTiers(): Tier[] {
+
+}
+
+function getGlobalTiers(): Array<string> {
+
+}
+
+export deleteGlobalTier(id: string): void {
+
+}
+  
+
+export function createTier(
+  name: string,
+	cost: u64,
+	reqInfo: Array<string>,
+	// contributions: Array<string> 
+): string[] {
+  let rnj = generateRandomRnj();
+  let id = base64.encode(rnj);
+  return generateTier(
+    rnj,
+    id,
+    name,
+    cost,
+    reqInfo
   );
+} 
 
-  storage.set(account_id, message);
+function generateTier(
+  rnj: Uint8Array,
+	id: string,
+	name: string,
+	cost: u64,
+	reqInfo: Array<string>,
+	// contributions: Array<string>
+): string[] {
+  let tier = new Tier(rnj, id, name, cost, reqInfo);
+  setTier(rnj, tier);
+  setTiersByCreator(context.sender, id);
+  logging.log("create a new tier")
+  logging.log("id")
+  return [name, id]
 }
+
+function generateRandomRnj(): Uint8Array {
+	return math.randomBuffer(RNJ_DIGITS);
+}
+
+function randomNum(): u32 {
+	let buf = math.randomBuffer(4);
+	return (((0xff & buf[0]) << 24) | ((0xff & buf[1]) << 16) | ((0xff & buf[2]) << 8) | ((0xff & buf[3]) << 0)) % 100;
+}
+
