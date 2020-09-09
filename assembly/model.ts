@@ -1,24 +1,29 @@
 import { context, PersistentMap } from 'near-sdk-as';
 
 @nearBindgen
-export class TiersList {
+export class TierList {
   constructor(public id: Array<string>) {}
 }
 
 @nearBindgen
-export class Tier {
-  creator: string;
+export class ContributionList {
+	constructor(public id: Array<string>) {}
+}
 
-  constructor(
-    public rnj: Uint8Array,
-    public id: string,
-    public name: string,
-    public cost: string,
-    public reqInfo: Array<string>,
-    // public contributions: Array<string>,
-  ) {
-    this.creator = context.sender;
-  }
+@nearBindgen
+export class Tier {
+	owner: string;
+
+	constructor(
+		public rnj: Uint8Array,
+		public id: string,
+		public name: string,
+		public cost: string, // probably needs to be a u64 check createTier & generateTier in main.ts
+		public reqInfo: Array<string>
+	) // public contributions: Array<string>,
+	{
+		this.owner = context.sender;
+	}
 }
 
 @nearBindgen
@@ -44,13 +49,13 @@ export class Contribution {
 export const tiers = new PersistentMap<Uint8Array, Tier>("tiers")
 
 // store all tiers ids of an owner
-export const tiersByCreator = new PersistentMap<Uint8Array, TiersList>(
-  "tiersByCreator"
+export const tiersByOwner = new PersistentMap<string, TierList>(
+  "tiersByOwner"
 )
 
 // store all contributions of a tier by tier
-export const contributionsByTier = new PersistentMap<Uint8Array, ContributionsList>(
+export const contributionsByTier = new PersistentMap<Uint8Array, ContributionList>(
   "contributions"
 )
 
-export const displayTiers = new PersistentMap<string, TiersList>("show");
+export const displayTiers = new PersistentMap<string, TierList>("show");

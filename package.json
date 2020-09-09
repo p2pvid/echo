@@ -15,6 +15,7 @@
     "prestart": "next build:contract:debug && next:deploy:contract",
     "start": "next start",
     "dev": "next",
+    "dev-contract": "yarn build:contract:debug && near dev-deploy && nodemon --watch assembly -e ts --exec yarn dev:start",
     "export": "next export"
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-const CONTRACT_NAME = process.env.CONTRACT_NAME ||'jharris3.testnet'
+const CONTRACT_NAME = process.env.CONTRACT_NAME ||'new-corgis'
 
 function getConfig(env) {
   switch (env) {
