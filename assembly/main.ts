@@ -1,10 +1,15 @@
-import { context, logging, storage, base64, math } from 'near-sdk-as';
+import { context, logging, storage, base64, math, ContractPromiseBatch } from 'near-sdk-as';
 import {
-  Tier,
-  TierList,
-  tiers,
-  tiersByOwner,
-  displayTiers,
+	Tier,
+	TierList,
+	tiers,
+	tiersByOwner,
+	displayTiers,
+	Contribution,
+	contributions,
+	ContributionList,
+	contributionsByTier,
+	contributionsByContributor,
 } from './model';
 
 const RNJ_DIGITS: u32 = 16;
@@ -47,6 +52,7 @@ function getTiersByOwner(owner: string): Array<string> {
   }
   return tierIdList.id;
 }
+
 
 function setTiersByOwner(owner: string, id: string): void {
   let tierIdList = getTiersByOwner(owner);
@@ -94,6 +100,91 @@ export function deleteTier(id: string): void {
 }
 
 
+// // Methods for Contributiors
+function getContributionsByContributor(contributor: string): Array<string> {
+	let contributionIdList = contributionsByContributor.get(contributor);
+	if (!contributionIdList) {
+		return new Array<string>();
+	}
+	return contributionIdList.id;
+}
+
+function setContributionsByContributor(contributor: string, id: string): void {
+  let contributionIdList = getContributionsByContributor(contributor);
+  contributionIdList.push(id);
+  let newList = new ContributionList(contributionIdList);
+  contributionsByContributor.set(contributor, newList)
+}
+
+
+// // Methods for Contribution
+
+export function getContribution(id: string): Contribution{
+  const rnj = base64.decode(id)
+  return contributions.getSome(rnj)
+}
+
+function sendContribution(rnj: Uint8Array, contribution: Contribution): void {
+  contributions.set(rnj, contribution);
+}
+
+// make contribution
+export function initiateContribution(
+	fee_rate: f64,
+	receiver: string,
+	required_info: string,
+	tier_purchased: string,
+	tier_purchased_index: u16,
+	payment: u64,
+	message: string
+): string[] {
+	let rnj = generateRandomRnj();
+	let id = base64.encode(rnj);
+	return makeContribution(
+		rnj,
+		id,
+		fee_rate,
+		receiver,
+		required_info,
+		tier_purchased,
+		tier_purchased_index,
+		payment,
+		message
+	);
+}
+
+ function makeContribution(
+  rnj: Uint8Array,
+  id: string,
+  fee_rate: f64,
+  receiver: string,
+  required_info: string,
+  tier_purchased: string,
+  tier_purchased_index: u16,
+  payment: u128,
+  message: string
+  ): string[] {
+
+  let contribution = new Contribution(rnj, id, fee_rate, receiver, required_info, tier_purchased, tier_purchased_index, payment, message);
+  
+  let tx_fee = calculateFees(payment, fee_rate)
+
+  // sends payment to owner and fees to anechoic
+  ContractPromiseBatch.create(receiver).transfer(payment);
+  ContractPromiseBatch.create('echo-fees.anechoic.testnet').transfer(tx_fee);
+
+  
+  sendContribution(rnj, contribution);
+  sendContributionsByContributor(context.sender, id)
+  logging.log(context.sender + 'is making a new contribution');
+	logging.log('id');
+	return [context.sender, id];
+}
+
+function calculateFees(payment: u64, feeRate: f64): Number {
+	return payment * feeRate;
+} 
+
 // display global tiers
 export function displayGolbalTiers(): Tier[] {
   let tierIdList = getGlobalTiers();
@@ -139,44 +230,36 @@ function deleteGlobalTier(id: string): void {
 
 
 export function createTier(
-  name: string,
+	name: string,
 	cost: string, // probably needs to be a u64
-	reqInfo: Array<string>,
-	// contributions: Array<string> 
+	description: string,
+	contributor_info: Array<string>
+	// contributions: Array<string>
 ): string[] {
-  let rnj = generateRandomRnj();
-  let id = base64.encode(rnj);
-  return generateTier(
-    rnj,
-    id,
-    name,
-    cost,
-    reqInfo
-  );
+	let rnj = generateRandomRnj();
+	let id = base64.encode(rnj);
+	return generateTier(rnj, id, name, description, cost, contributor_info);
 } 
 
 function generateTier(
-  rnj: Uint8Array,
+	rnj: Uint8Array,
 	id: string,
 	name: string,
+	description: string,
 	cost: string, // probably needs to be a u64
-	reqInfo: Array<string>,
+	contributor_info: Array<string>
 	// contributions: Array<string>
 ): string[] {
-  let tier = new Tier(rnj, id, name, cost, reqInfo);
-  setTier(rnj, tier);
-  setTiersByOwner(context.sender, id);
-  logging.log("create a new tier")
-  logging.log("id")
-  return [name, id]
+	let tier = new Tier(rnj, id, name, description, cost, contributor_info);
+	setTier(rnj, tier);
+	setTiersByOwner(context.sender, id);
+	logging.log('create a new tier');
+	logging.log('id');
+	return [name, id];
 }
 
 function generateRandomRnj(): Uint8Array {
 	return math.randomBuffer(RNJ_DIGITS);
 }
 
-// function randomNum(): u32 {
-// 	let buf = math.randomBuffer(4);
-// 	return (((0xff & buf[0]) << 24) | ((0xff & buf[1]) << 16) | ((0xff & buf[2]) << 8) | ((0xff & buf[3]) << 0)) % 100;
-// }
 

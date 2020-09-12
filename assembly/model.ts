@@ -1,4 +1,4 @@
-import { context, PersistentMap } from 'near-sdk-as';
+import { context, PersistentMap, u256 } from 'near-sdk-as';
 
 @nearBindgen
 export class TierList {
@@ -18,33 +18,35 @@ export class Tier {
 		public rnj: Uint8Array,
 		public id: string,
 		public name: string,
+		public description: string,
 		public cost: string, // probably needs to be a u64 check createTier & generateTier in main.ts
-		public reqInfo: Array<string>
-	) // public contributions: Array<string>,
-	{
+		public contributor_info: Array<string> // public contributions: Array<string>,
+	) {
 		this.owner = context.sender;
 	}
 }
 
 @nearBindgen
 export class Contribution {
-	owner: string;
+	contributor: string;
 
 	constructor(
+		public receiver: string,
+		public rnj: Uint8Array,
 		public id: string,
-		// public fufillment: string,
-		public reqInfo: string,
+		public fee_rate: f64,
+		public required_info: string,
 		public tier_purchased: string,
 		public tier_purchased_index: u16,
-		public tier_price: u64,
-		// public purchase_history: Array<string>,
-		// public total_paid: u64,
-		public active: bool
-	) {
-		this.owner = context.sender;
+		public payment: u64,
+		public message: string // public fufillment: string, // public purchase_history: Array<string>,
+	) // public total_paid: u64,
+	// public active: bool
+	{
+		this.contributor = context.sender;
 	}
 }
-
+//Tier Storage
 // store all tiers with a unique id
 export const tiers = new PersistentMap<Uint8Array, Tier>("tiers")
 
@@ -53,9 +55,17 @@ export const tiersByOwner = new PersistentMap<string, TierList>(
   "tiersByOwner"
 )
 
+export const displayTiers = new PersistentMap<string, TierList>('show');
+
+//Contribution Storage
+export const contributions = new PersistentMap<Uint8Array, Contribution>('contributions');
+
 // store all contributions of a tier by tier
 export const contributionsByTier = new PersistentMap<Uint8Array, ContributionList>(
   "contributions"
 )
 
-export const displayTiers = new PersistentMap<string, TierList>("show");
+// store all tiers ids of an owner
+export const contributionsByContributor = new PersistentMap<string, ContributionList>(
+  "contributionsByContributor"
+)
