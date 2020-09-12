@@ -31,17 +31,16 @@ export class Contribution {
 	contributor: string;
 
 	constructor(
-		public receiver: string,
 		public rnj: Uint8Array,
 		public id: string,
 		public fee_rate: u128,
+		public receiver: string,
 		public required_info: string,
 		public tier_purchased: string,
 		public tier_purchased_index: u16,
 		public payment: u128,
-		public message: string // public fufillment: string, // public purchase_history: Array<string>,
-	) // public total_paid: u64,
-	// public active: bool
+		public message: string // public fufillment: string, // public purchase_history: Array<string>, // public total_paid: u64,
+	) // public active: bool
 	{
 		this.contributor = context.sender;
 	}
