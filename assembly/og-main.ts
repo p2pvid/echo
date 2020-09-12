@@ -38,3 +38,4 @@ export function setGreeting(message: string): void {
 
   storage.set(account_id, message);
 }
+

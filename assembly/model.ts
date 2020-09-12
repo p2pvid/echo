@@ -37,7 +37,7 @@ export class Contribution {
 		public receiver: string,
 		public required_info: string,
 		public tier_purchased: string,
-		public tier_purchased_index: u16,
+		public tier_purchased_index: u128,
 		public payment: u128,
 		public message: string // public fufillment: string, // public purchase_history: Array<string>, // public total_paid: u64,
 	) // public active: bool

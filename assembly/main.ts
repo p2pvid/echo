@@ -100,7 +100,21 @@ export function deleteTier(id: string): void {
 }
 
 
-// // Methods for Contributiors
+// // Methods for Contributors
+export function getContributionsList(contributor: string): Contribution[] {
+  let contributionIdList = getContributionsByContributor(contributor);
+  let contributionsList = new Array<Contribution>();
+
+  for (let i = 0; i < contributionIdList.length; i++) {
+		let itemRNJ = base64.decode(contributionIdList[i]);
+		if (contributions.contains(itemRNJ)) {
+			let contribution = contributions.getSome(itemRNJ);
+			contributionsList.push(contribution);
+		}
+  }
+  return contributionsList
+}
+
 function getContributionsByContributor(contributor: string): Array<string> {
 	let contributionIdList = contributionsByContributor.get(contributor);
 	if (!contributionIdList) {
@@ -134,7 +148,7 @@ export function initiateContribution(
 	receiver: string,
 	required_info: string,
 	tier_purchased: string,
-	tier_purchased_index: u16,
+	tier_purchased_index: u128,
 	payment: u128,
 	message: string
 ): string[] {
@@ -160,31 +174,31 @@ export function initiateContribution(
   receiver: string,
   required_info: string,
   tier_purchased: string,
-  tier_purchased_index: u16,
+  tier_purchased_index: u128,
   payment: u128,
   message: string
   ): string[] {
 
   let contribution = new Contribution(rnj, id, fee_rate, receiver, required_info, tier_purchased, tier_purchased_index, payment, message);
   
-  let tx_fee = calculateFees(payment, fee_rate)
+  // let tx_fee = calculateFees(payment, fee_rate)
 
   // sends payment to owner and fees to anechoic
   ContractPromiseBatch.create(receiver).transfer(payment);
-  ContractPromiseBatch.create('echo-fees.anechoic.testnet').transfer(tx_fee);
+  ContractPromiseBatch.create('echo-fees.anechoic.testnet').transfer(fee_rate);
 
   
   sendContribution(rnj, contribution);
   setContributionsByContributor(context.sender, id)
-  logging.log(context.sender + 'is making a new contribution');
-	logging.log('id');
+  logging.log(context.sender + ' is making a new contribution');
+	logging.log(id);
 	return [context.sender, id];
 }
 
-function calculateFees(payment: u128, feeRate: u128): u128 {
-   let fee =  (payment / feeRate);
-   return fee;
-} 
+// function calculateFees(payment: u128, feeRate: u128): u128 {
+//    let fee =  Number(payment / feeRate);
+//    return fee;
+// } 
 
 // display global tiers
 export function displayGolbalTiers(): Tier[] {
@@ -255,7 +269,7 @@ function generateTier(
 	setTier(rnj, tier);
 	setTiersByOwner(context.sender, id);
 	logging.log('create a new tier');
-	logging.log('id');
+	logging.log(id);
 	return [name, id];
 }
 
