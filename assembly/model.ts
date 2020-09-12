@@ -1,4 +1,4 @@
-import { context, PersistentMap, u256 } from 'near-sdk-as';
+import { context, PersistentMap, u256, u128 } from 'near-sdk-as';
 
 @nearBindgen
 export class TierList {
@@ -34,11 +34,11 @@ export class Contribution {
 		public receiver: string,
 		public rnj: Uint8Array,
 		public id: string,
-		public fee_rate: f64,
+		public fee_rate: u128,
 		public required_info: string,
 		public tier_purchased: string,
 		public tier_purchased_index: u16,
-		public payment: u64,
+		public payment: u128,
 		public message: string // public fufillment: string, // public purchase_history: Array<string>,
 	) // public total_paid: u64,
 	// public active: bool

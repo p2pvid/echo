@@ -1,4 +1,4 @@
-import { context, logging, storage, base64, math, ContractPromiseBatch } from 'near-sdk-as';
+import { context, logging, storage, base64, math, ContractPromiseBatch, u128 } from 'near-sdk-as';
 import {
 	Tier,
 	TierList,
@@ -130,12 +130,12 @@ function sendContribution(rnj: Uint8Array, contribution: Contribution): void {
 
 // make contribution
 export function initiateContribution(
-	fee_rate: f64,
+	fee_rate: u128,
 	receiver: string,
 	required_info: string,
 	tier_purchased: string,
 	tier_purchased_index: u16,
-	payment: u64,
+	payment: u128,
 	message: string
 ): string[] {
 	let rnj = generateRandomRnj();
@@ -156,7 +156,7 @@ export function initiateContribution(
  function makeContribution(
   rnj: Uint8Array,
   id: string,
-  fee_rate: f64,
+  fee_rate: u128,
   receiver: string,
   required_info: string,
   tier_purchased: string,
@@ -175,14 +175,14 @@ export function initiateContribution(
 
   
   sendContribution(rnj, contribution);
-  sendContributionsByContributor(context.sender, id)
+  setContributionsByContributor(context.sender, id)
   logging.log(context.sender + 'is making a new contribution');
 	logging.log('id');
 	return [context.sender, id];
 }
 
-function calculateFees(payment: u64, feeRate: f64): Number {
-	return payment * feeRate;
+function calculateFees(payment: u128, feeRate: u128): u128 {
+	let fee =  (payment / feeRate);
 } 
 
 // display global tiers
