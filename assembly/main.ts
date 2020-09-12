@@ -182,7 +182,8 @@ export function initiateContribution(
 }
 
 function calculateFees(payment: u128, feeRate: u128): u128 {
-	let fee =  (payment / feeRate);
+   let fee =  (payment / feeRate);
+   return fee;
 } 
 
 // display global tiers
