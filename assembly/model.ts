@@ -12,7 +12,8 @@ export class ContributionList {
 
 @nearBindgen
 export class Tier {
-	owner: string;
+  owner: string;
+  // public_key: string;
 
 	constructor(
 		public rnj: Uint8Array,
@@ -22,13 +23,15 @@ export class Tier {
 		public cost: string, // probably needs to be a u64 check createTier & generateTier in main.ts
 		public contributor_info: Array<string> // public contributions: Array<string>,
 	) {
-		this.owner = context.sender;
+    this.owner = context.sender;
+    // this.public_key = context.senderPublicKey
+    
 	}
 }
 
 @nearBindgen
 export class Contribution {
-	contributor: string;
+  contributor: string;
 
 	constructor(
 		public rnj: Uint8Array,
@@ -64,7 +67,7 @@ export const contributionsByTier = new PersistentMap<Uint8Array, ContributionLis
   "contributions"
 )
 
-// store all tiers ids of an owner
+// store all contributions by id
 export const contributionsByContributor = new PersistentMap<string, ContributionList>(
   "contributionsByContributor"
 )

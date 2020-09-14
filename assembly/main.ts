@@ -79,6 +79,36 @@ function deleteTierByOwner(owner: string, id: string): void {
   tiersByOwner.set(owner, newList);
 }
 
+export function getReceiverContributionsList(receiver: string): Contribution[] {
+	let contributionIdList = getReceiverContributionsByContributor(receiver);
+	let contributionsList = new Array<Contribution>();
+
+	for (let i = 0; i < contributionIdList.length; i++) {
+		let itemRNJ = base64.decode(contributionIdList[i]);
+		if (contributions.contains(itemRNJ)) {
+			let contribution = contributions.getSome(itemRNJ);
+			contributionsList.push(contribution);
+		}
+	}
+	return contributionsList;
+}
+
+function getReceiverContributionsByContributor(receiver: string): Array<string> {
+	let contributionIdList = contributionsByContributor.get(receiver);
+	if (!contributionIdList) {
+		return new Array<string>();
+	}
+	return contributionIdList.id;
+}
+
+function setContributionsByReceiver(reciever: string, id: string): void {
+	let contributionIdList = getContributionsByContributor(reciever);
+	contributionIdList.push(id);
+	let newList = new ContributionList(contributionIdList);
+	contributionsByContributor.set(reciever, newList);
+}
+
+
 // // Methods for Tier
 export function getTier(id: string): Tier {
   const rnj = base64.decode(id)
@@ -201,7 +231,7 @@ export function initiateContribution(
 // } 
 
 // display global tiers
-export function displayGolbalTiers(): Tier[] {
+export function displayGlobalTiers(): Tier[] {
   let tierIdList = getGlobalTiers();
   const tierNum = min(ORDER_LIMIT, tierIdList.length);
   const result = new Array<Tier>(tierNum);
