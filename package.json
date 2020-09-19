@@ -41,6 +41,7 @@
     "@babel/preset-react": "^7.9.4",
     "@fortawesome/fontawesome-free": "^5.14.0",
     "@zeit/next-css": "^1.0.1",
+    "big.js": "^5.2.2",
     "mdbreact": "./mdbreact-4.27.0.tgz",
     "near-api-js": "^0.29.0",
     "next": "^9.5.3",

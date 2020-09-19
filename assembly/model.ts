@@ -71,3 +71,4 @@ export const contributionsByTier = new PersistentMap<Uint8Array, ContributionLis
 export const contributionsByContributor = new PersistentMap<string, ContributionList>(
   "contributionsByContributor"
 )
+

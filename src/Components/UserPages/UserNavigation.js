@@ -130,11 +130,11 @@ class NavbarPage extends Component {
 							<MDBRow>
 								<MDBCol className="border mx-0 px-0">
 									<MDBNavItem>
-										<Link href="/">
-											<a>
-												<MDBIcon size="2x" icon="search" className="my-3" />
-											</a>
-										</Link>
+										{/* <Link href="/">
+											<a> */}
+												<MDBIcon size="2x" icon="search" className="my-3" style={{opacity: '.3'}} />
+											{/* </a>
+										</Link> */}
 									</MDBNavItem>
 								</MDBCol>
 
@@ -160,7 +160,7 @@ class NavbarPage extends Component {
 
 								<MDBCol className="border mx-0 px-0">
 									<MDBNavItem active>
-										<Link href="/home/listings">
+										<Link href="/home/create">
 											<a>
 												<MDBIcon size="2x" icon="plus" className="my-3" />
 											</a>
