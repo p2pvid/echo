@@ -7,7 +7,7 @@ import { initContract, login, logout } from '../utils';
 const Layout = ({ children }, props) => {
    
   useEffect(() => {
-			window.nearInitPromise = initContract();
+			// window.nearInitPromise = initContract();
 		});
 
 	return (
