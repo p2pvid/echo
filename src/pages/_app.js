@@ -17,8 +17,6 @@ import { login, logout, InitContract, initContract } from '../utils'
 import NearContextProvider from '../context/NearContext';
 import ContractContextProvider from '../hooks/contract';
 
-const nearConfig = getConfig(process.env.NODE_ENV || 'development');
-// const Utils = dynamic( () => import("../utils"), {ssr: false})
 
 export default function MyApp({ Component, pageProps }) {
 	const [nearData, setNearData] = useState({
@@ -27,22 +25,29 @@ export default function MyApp({ Component, pageProps }) {
 		near: '',
 		nearConfig: '',
 		walletConnection: '',
-		utils: false,
+		arrived: false,
 	});
 
 	useEffect(
 		async (e) => {
-			let  data = await InitContract()
-      console.log(data);
-      setNearData({...data});
+      
+      let data = await InitContract()
+      
+      setNearData({ ...data, arrived: true})
       
 
-      return (data) => {
-        console.log(data)
+      
+      
+
+      return () => {
+        setNearData({ arrived: true });
       }
       
 		},[]
-	);
+  );
+  
+  if (!!nearData.arrived){
+    console.log(nearData.contract);
 		return (
 			<NearContextProvider
 				currentUser={nearData.currentUser}
@@ -52,13 +57,18 @@ export default function MyApp({ Component, pageProps }) {
 			>
 				<Component {...pageProps} />
 			</NearContextProvider>
-		);
+    );}
+    else {
+      return (
+				// <NearContextProvider
+				// 	currentUser={nearData.currentUser}
+				// 	nearConfig={nearData.nearConfig}
+				// 	wallet={nearData.walletConnection}
+				// 	near={nearData.near}
+				// >
+				// 	<Component {...pageProps} />
+				// </NearContextProvider>
+				<h1>Loading...</h1>
+			);
+    }
 }
-
-// MyApp.getInitialProps = async (appContext) => {
-//   // calls page's `getInitialProps` and fills `appProps.pageProps`
-//   const appProps = await App.getInitialProps(appContext);
-//   const nearData = await InitContract();
-
-//   return { ...appProps, nearData }
-// }

@@ -25,6 +25,8 @@ const NavbarPage = (props) => {
   const [isCollapsed1, setIsCollapsed1] = useState(false);
 
 	const nearContext = useContext(NearContext);
+	console.log(nearContext.user)
+
 	const signIn = () => {
 		nearContext.signIn();
 	};
@@ -51,37 +53,37 @@ const NavbarPage = (props) => {
 						</a>
 					</Link>
 				</MDBNavbarBrand>
-				<MDBNavbarToggler>
+				<MDBNavbarToggler className="mt-3">
 					<MDBHamburgerToggler
 						color="#016367"
 						id="hamburger1"
 						onClick={() => setIsCollapsed1((isCollapsed1) => !isCollapsed1)}
 					/>
 				</MDBNavbarToggler>
-				<MDBCollapse
-					className="nav-blur justify-content-end"
-					isOpen={isCollapsed1}
-					navbar
-				>
+				<MDBCollapse className="nav-blur justify-content-end" isOpen={isCollapsed1} navbar>
 					<MDBNavbarNav className="dropdown-menu-right" right>
-
 						<MDBNavItem className="my-auto" right>
 							<MDBContainer>
 								<MDBRow className="">
-									<MDBCol size='5'>
-										{/* <MDBIcon size="2x" icon="home" /> */}
-										<MDBBtn outline rounded onClick={signIn}>
-											Login
-										</MDBBtn>
-									</MDBCol>
-									<MDBCol size='5'>
-										<a href="/" target="blank">
-											{/* <MDBIcon size="2x" icon="wallet" /> */}
-											<MDBBtn outline rounded>
-												Logout
+									{nearContext.user === undefined ? (
+										<MDBCol size="5">
+											{/* <MDBIcon size="2x" icon="home" /> */}
+											<MDBBtn outline onClick={signIn}>
+												Login
 											</MDBBtn>
-										</a>
-									</MDBCol>
+										</MDBCol>
+									) : null}
+
+									{nearContext.user ? (
+										<MDBCol size="5">
+											<a href="/" target="blank">
+												{/* <MDBIcon size="2x" icon="wallet" /> */}
+												<MDBBtn outline>
+													Logout
+												</MDBBtn>
+											</a>
+										</MDBCol>
+									) : null}
 									{/* <MDBCol>
 										<a href="/" target="blank">
 											<MDBIcon size="2x" icon="plus" />
