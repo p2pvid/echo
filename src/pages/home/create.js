@@ -4,11 +4,16 @@ import Layout from '../../Components/UserPages/UserLayout';
 import { useRouter } from 'next/router'
 
 import { NearContext } from '../../context/NearContext';
+import Big from 'big.js';
+
+const BOATLOAD_OF_GAS = Big(3)
+	.times(10 ** 13)
+	.toFixed();
 
 const Create = (props) => {
 
 	const nearContext = useContext(NearContext);
-	const contract = nearContext.contract
+	const contract = nearContext.contract[0]
 	
 	console.log(contract);
 
@@ -83,18 +88,38 @@ const Create = (props) => {
 
 	const handleOnSubmit = (e) => {
 		e.preventDefault();
-		setStatus((prevStatus) => ({ ...prevStatus, submitting: true }));
-		axios({
-			method: 'POST',
-			url: 'https://formspree.io/mvowlqbq',
-			data: inputs,
+			console.log('submitting things')
+		contract.createTier(
+			{
+				name: inputs.name,
+				cost: inputs.cost,
+				description: inputs.description,
+				contributor_info: [inputs.contributor_info]
+			},
+			BOATLOAD_OF_GAS,
+			// Big(donation.value || '0')
+			// 	.times(10 ** 24)
+			// 	.toFixed()
+		).then( () => {
+			contract.getTiersList(
+				{
+					owner: nearContext.user.accountId
+				}
+			).then( tiers => {console.log(tiers)})
 		})
-			.then((response) => {
-				handleServerResponse(true, 'Thank you, your message has been submitted.');
-			})
-			.catch((error) => {
-				handleServerResponse(false, error.response.data.error);
-			});
+
+		// setStatus((prevStatus) => ({ ...prevStatus, submitting: true }));
+		// axios({
+		// 	method: 'POST',
+		// 	url: 'https://formspree.io/mvowlqbq',
+		// 	data: inputs,
+		// })
+		// 	.then((response) => {
+		// 		handleServerResponse(true, 'Thank you, your message has been submitted.');
+		// 	})
+		// 	.catch((error) => {
+		// 		handleServerResponse(false, error.response.data.error);
+		// 	});
 	};
 
 	return (
@@ -123,7 +148,7 @@ const Create = (props) => {
 									/>
 									<label className="mt-3">Set Price</label>
 									<input
-										id="price"
+										id="cost"
 										label="Price"
 										className="form-control"
 										group
@@ -134,6 +159,7 @@ const Create = (props) => {
 									/>
 									<label className="mt-3">Tier description</label>
 									<textarea
+										id="description"
 										className="form-control"
 										label="Tier description"
 										group
@@ -145,6 +171,7 @@ const Create = (props) => {
 									/>
 									<label className="mt-3">Required Info</label>
 									<textarea
+										id="contributor_info"
 										className="form-control"
 										label="Required Info"
 										group
@@ -154,12 +181,13 @@ const Create = (props) => {
 										onChange={handleOnChange}
 										required
 									/>
+
+									<div className="text-center mb-4 mt-5">
+										<MDBBtn color="danger" type="submit" className="btn-block z-depth-2">
+											Submit
+										</MDBBtn>
+									</div>
 								</form>
-								<div className="text-center mb-4 mt-5">
-									<MDBBtn color="danger" type="button" className="btn-block z-depth-2">
-										Submit
-									</MDBBtn>
-								</div>
 							</MDBCardBody>
 						</MDBCard>
 					</MDBCol>
