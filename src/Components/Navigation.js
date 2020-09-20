@@ -1,4 +1,4 @@
-import React, { Component, useState, useContext } from 'react';
+import React, { Component, useState, useContext, Fragment } from 'react';
 import {
 	MDBNavbar,
 	MDBNavbarBrand,
@@ -25,7 +25,7 @@ const NavbarPage = (props) => {
   const [isCollapsed1, setIsCollapsed1] = useState(false);
 
 	const nearContext = useContext(NearContext);
-	console.log(nearContext.user)
+	// console.log(nearContext.user)
 
 	const signIn = () => {
 		nearContext.signIn();
@@ -75,14 +75,21 @@ const NavbarPage = (props) => {
 									) : null}
 
 									{nearContext.user ? (
-										<MDBCol size="5">
-											<a href="/" target="blank">
-												{/* <MDBIcon size="2x" icon="wallet" /> */}
-												<MDBBtn outline>
-													Logout
-												</MDBBtn>
-											</a>
-										</MDBCol>
+										<Fragment>
+											<MDBCol size="5">
+												<a href="/home" target="blank">
+													{/* <MDBIcon size="2x" icon="wallet" /> */}
+													<MDBBtn outline>Home</MDBBtn>
+												</a>
+											</MDBCol>
+
+											<MDBCol size="5">
+												<a href="/" target="blank">
+													{/* <MDBIcon size="2x" icon="wallet" /> */}
+													<MDBBtn outline>Logout</MDBBtn>
+												</a>
+											</MDBCol>
+										</Fragment>
 									) : null}
 									{/* <MDBCol>
 										<a href="/" target="blank">

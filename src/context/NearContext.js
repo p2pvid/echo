@@ -10,9 +10,10 @@ export const NearContext = React.createContext({
 	setLoading: () => {},
 });
 
-const NearContextProvider = ({ currentUser, nearConfig, wallet, near, children }) => {
+const NearContextProvider = ({ currentUser, nearConfig, wallet, near, nearContract, children }) => {
 	const user = useState(currentUser)[0];
-	const nearContent = useState(near)[0];
+  const nearContent = useState(near)[0];
+  const contract = useState(nearContract)
 	const [isLoading, setLoading] = useState(false);
 
 	const signIn = useCallback(() => {
@@ -34,7 +35,8 @@ const NearContextProvider = ({ currentUser, nearConfig, wallet, near, children }
 				signOut,
 				isLoading,
 				setLoading,
-				nearContent,
+        nearContent,
+        contract,
 			}}
 		>
 			{children}

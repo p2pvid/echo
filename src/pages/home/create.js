@@ -1,14 +1,29 @@
-import React, { Component, useState } from 'react';
+import React, { Component, useState, useContext, useEffect } from 'react';
 import { MDBContainer, MDBTabPane, MDBTabContent, MDBNav, MDBNavItem, MDBNavLink, MDBIcon, MDBRow, MDBCol,MDBCard, MDBCardBody, MDBInput, MDBBtn } from 'mdbreact';
 import Layout from '../../Components/UserPages/UserLayout';
 import { useRouter } from 'next/router'
 
-const Create = () => {
+import { NearContext } from '../../context/NearContext';
+
+const Create = (props) => {
+
+	const nearContext = useContext(NearContext);
+	const contract = nearContext.contract
+	
+	console.log(contract);
+
 	const [activeTab, setActiveTab] = useState({
 		activeTab: '1'
 	})
 
 	const router = useRouter();
+
+	useEffect(() => {
+		contract;
+		return () => {
+			cleanup;
+		};
+	}, []);
 
 	const [status, setStatus] = useState({
 		submitted: false,
