@@ -49,6 +49,10 @@ a {
   color: #016367 !important;
 }
 
+.k-green-bg {
+  background-color: #016367 !important;
+}
+
 .nav-font{
   font-size: 2em;
   color: #0B1C48 !important;
@@ -110,4 +114,8 @@ html,body {
 }
 #profile-v1 .profile-card p, .user-card .about-text h4 {
   font-weight: 300;
+}
+
+label {
+  font-size: 1.5em
 }

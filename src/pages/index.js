@@ -7,7 +7,7 @@ import Layout from '../Components/Layout.js';
 const HomePage = () => {
   
   useEffect(() => {
-    window.nearInitPromise = initContract();
+    // window.nearInitPromise = initContract();
   })
   
   return (

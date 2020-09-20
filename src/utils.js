@@ -1,7 +1,10 @@
 import { connect, Contract, keyStores, WalletConnection } from 'near-api-js'
 import getConfig from './config'
+import * as nearlib from 'near-api-js';
+
 
 const nearConfig = getConfig(process.env.NODE_ENV || 'development')
+
 
 // Initialize contract & set global variables
 export async function initContract() {
@@ -18,11 +21,49 @@ export async function initContract() {
   // Initializing our contract APIs by contract name and configuration
   window.contract = await new Contract(window.walletConnection.account(), nearConfig.contractName, {
     // View methods are read only. They don't modify the state, but usually return some value.
-    viewMethods: ['getGreeting'],
+    viewMethods: ['getTier', 'getTiersList', 'displayGlobalTiers'],
     // Change methods can modify the state. But you don't receive the returned value when called.
-    changeMethods: ['setGreeting'],
+    changeMethods: ['createTier', 'deleteTier'],
   })
 }
+
+
+	// Initializing contract
+	export async function InitContract() {
+		const nearConfig = getConfig(process.env.NODE_ENV || 'development');
+
+		// Initializing connection to the NEAR
+		const near = await nearlib.connect({
+			deps: {
+				keyStore: new nearlib.keyStores.BrowserLocalStorageKeyStore(),
+			},
+			...nearConfig,
+		});
+
+		// Needed to access wallet
+		const walletConnection = new nearlib.WalletConnection(near);
+
+		// Load in account data
+		let currentUser;
+		if (walletConnection.getAccountId()) {
+			currentUser = {
+				accountId: walletConnection.getAccountId(),
+				balance: (await walletConnection.account().state()).amount,
+			};
+		}
+
+		// Initializing our contract APIs by contract name and configuration.
+		const contract = await new nearlib.Contract(walletConnection.account(), nearConfig.contractName, {
+			// View methods are read only. They don't modify the state, but usually return some value.
+			viewMethods: ['getTier', 'getTiersList', 'displayGlobalTiers'],
+			// Change methods can modify the state. But you don't receive the returned value when called.
+			changeMethods: ['createTier', 'deleteTier'],
+			// Sender is the account ID to initialize transactions.
+			sender: walletConnection.getAccountId(),
+		});
+		return { contract, currentUser, nearConfig, walletConnection, near };
+	}
+
 
 export function logout() {
   window.walletConnection.signOut()
