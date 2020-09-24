@@ -11,15 +11,15 @@ const BOATLOAD_OF_GAS = Big(3)
 	.toFixed();
 
 const Create = (props) => {
-
+	//get current near data and access to my echo contract
 	const nearContext = useContext(NearContext);
-	const contract = nearContext.contract[0]
-	
+	const contract = nearContext.contract[0];
+
 	console.log(contract);
 
 	const [activeTab, setActiveTab] = useState({
-		activeTab: '1'
-	})
+		activeTab: '1',
+	});
 
 	const router = useRouter();
 
@@ -40,6 +40,7 @@ const Create = (props) => {
 		cost: '',
 		description: '',
 		contributor_info: '',
+		image_url: '',
 	});
 	const [visible, setVisible] = useState({
 		isVisible: false,
@@ -65,6 +66,7 @@ const Create = (props) => {
 				cost: '',
 				description: '',
 				contributor_info: '',
+				image_url: '',
 			});
 		} else {
 			setStatus({
@@ -88,25 +90,30 @@ const Create = (props) => {
 
 	const handleOnSubmit = (e) => {
 		e.preventDefault();
-			console.log('submitting things')
-		contract.createTier(
-			{
-				name: inputs.name,
-				cost: inputs.cost,
-				description: inputs.description,
-				contributor_info: [inputs.contributor_info]
-			},
-			BOATLOAD_OF_GAS,
-			// Big(donation.value || '0')
-			// 	.times(10 ** 24)
-			// 	.toFixed()
-		).then( () => {
-			contract.getTiersList(
+		console.log('submitting things');
+		contract
+			.createTier(
 				{
-					owner: nearContext.user.accountId
-				}
-			).then( tiers => {console.log(tiers)})
-		})
+					name: inputs.name,
+					cost: inputs.cost,
+					description: inputs.description,
+					contributor_info: [inputs.contributor_info],
+					tier_image: inputs.image_url,
+				},
+				BOATLOAD_OF_GAS
+				// Big(donation.value || '0')
+				// 	.times(10 ** 24)
+				// 	.toFixed()
+			)
+			.then(() => {
+				contract
+					.getTiersList({
+						owner: nearContext.user.accountId,
+					})
+					.then((tiers) => {
+						console.log(tiers);
+					});
+			});
 
 		// setStatus((prevStatus) => ({ ...prevStatus, submitting: true }));
 		// axios({
@@ -143,6 +150,17 @@ const Create = (props) => {
 										className="form-control"
 										type="text"
 										value={inputs.name}
+										onChange={handleOnChange}
+										required
+									/>
+									<label className="mt-3">Tier Image Url</label>
+									<input
+										label="Tier Title"
+										id="image_url"
+										group
+										className="form-control"
+										type="text"
+										value={inputs.image_url}
 										onChange={handleOnChange}
 										required
 									/>

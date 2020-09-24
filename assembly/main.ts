@@ -1,4 +1,4 @@
-import { context, logging, storage, base64, math, ContractPromiseBatch, u128 } from 'near-sdk-as';
+import { context, logging, storage, base64, math, ContractPromiseBatch, u128, ContractPromise } from 'near-sdk-as';
 import {
 	Tier,
 	TierList,
@@ -10,16 +10,34 @@ import {
 	ContributionList,
 	contributionsByTier,
 	contributionsByContributor,
+  contributionsByReceiver,
+  Tribute
 } from './model';
 
 const RNJ_DIGITS: u32 = 16;
 const ORDER_LIMIT = 8;
+let destination = 'anechoic.testnet';
+
+
+
+// function bouncer(sender: string, authorized: string): string {
+//   switch (sender == authorized) {
+//     case true:
+//       return 'authorized'
+  
+//     case false:
+//       return 'you shall not pass'  
+//     default:
+//       break;
+//   }
+// }
+
 
 // *********************************************************
 
-
 // Methods for Owner
 
+// *********************************************************
 
 export function getTiersList(owner: string): Tier[] {
   let tierIdList = getTiersByOwner(owner);
@@ -80,7 +98,11 @@ function deleteTierByOwner(owner: string, id: string): void {
 }
 
 export function getReceiverContributionsList(receiver: string): Contribution[] {
-	let contributionIdList = getReceiverContributionsByContributor(receiver);
+  
+  //  IMPLEMENT BOUNCER HERE
+  // assert(context.sender != receiver, 'ERR_NOT_RIGHT_SENDER');
+  
+  let contributionIdList = getContributionsByReceiver(receiver);
 	let contributionsList = new Array<Contribution>();
 
 	for (let i = 0; i < contributionIdList.length; i++) {
@@ -93,23 +115,26 @@ export function getReceiverContributionsList(receiver: string): Contribution[] {
 	return contributionsList;
 }
 
-function getReceiverContributionsByContributor(receiver: string): Array<string> {
-	let contributionIdList = contributionsByContributor.get(receiver);
+function getContributionsByReceiver(receiver: string): Array<string> {
+	let contributionIdList = contributionsByReceiver.get(receiver);
 	if (!contributionIdList) {
 		return new Array<string>();
 	}
 	return contributionIdList.id;
 }
 
-function setContributionsByReceiver(reciever: string, id: string): void {
-	let contributionIdList = getContributionsByContributor(reciever);
-	contributionIdList.push(id);
-	let newList = new ContributionList(contributionIdList);
-	contributionsByContributor.set(reciever, newList);
+function setContributionsByReceiver(receiver: string, id: string): void {
+	let receiverIdList = getContributionsByReceiver(receiver);
+	receiverIdList.push(id);
+	let newList = new ContributionList(receiverIdList);
+	contributionsByReceiver.set(receiver, newList);
 }
 
+// *********************************************************
 
 // // Methods for Tier
+
+// *********************************************************
 export function getTier(id: string): Tier {
   const rnj = base64.decode(id)
   return tiers.getSome(rnj)
@@ -129,8 +154,11 @@ export function deleteTier(id: string): void {
   logging.log("after delete");
 }
 
+// *********************************************************
 
 // // Methods for Contributors
+
+// *********************************************************
 export function getContributionsList(contributor: string): Contribution[] {
   let contributionIdList = getContributionsByContributor(contributor);
   let contributionsList = new Array<Contribution>();
@@ -160,9 +188,11 @@ function setContributionsByContributor(contributor: string, id: string): void {
   contributionsByContributor.set(contributor, newList)
 }
 
+// *********************************************************
 
 // // Methods for Contribution
 
+// *********************************************************
 export function getContribution(id: string): Contribution{
   const rnj = base64.decode(id)
   return contributions.getSome(rnj)
@@ -172,7 +202,12 @@ function sendContribution(rnj: Uint8Array, contribution: Contribution): void {
   contributions.set(rnj, contribution);
 }
 
+// *********************************************************
+
 // make contribution
+
+// *********************************************************
+
 export function initiateContribution(
 	fee_rate: u128,
 	receiver: string,
@@ -220,6 +255,7 @@ export function initiateContribution(
   
   sendContribution(rnj, contribution);
   setContributionsByContributor(context.sender, id)
+  setContributionsByReceiver(receiver, id);
   logging.log(context.sender + ' is making a new contribution');
 	logging.log(id);
 	return [context.sender, id];
@@ -230,7 +266,11 @@ export function initiateContribution(
 //    return fee;
 // } 
 
-// display global tiers
+// *********************************************************
+
+// display global tiers (all tiers on a given contract)
+
+// *********************************************************
 export function displayGlobalTiers(): Tier[] {
   let tierIdList = getGlobalTiers();
   const tierNum = min(ORDER_LIMIT, tierIdList.length);
@@ -272,18 +312,22 @@ function deleteGlobalTier(id: string): void {
 }
 
 
+// *********************************************************
 
+// Create a new Tier
 
+// *********************************************************
 export function createTier(
 	name: string,
 	cost: string, // probably needs to be a u64
 	description: string,
-	contributor_info: Array<string>
+  contributor_info: Array<string>,
+  tier_image: string
 	// contributions: Array<string>
 ): string[] {
 	let rnj = generateRandomRnj();
 	let id = base64.encode(rnj);
-	return generateTier(rnj, id, name, description, cost, contributor_info);
+	return generateTier(rnj, id, name, description, cost, contributor_info, tier_image);
 } 
 
 function generateTier(
@@ -292,10 +336,11 @@ function generateTier(
 	name: string,
 	description: string,
 	cost: string, // probably needs to be a u64
-	contributor_info: Array<string>
+  contributor_info: Array<string>,
+  tier_image: string
 	// contributions: Array<string>
 ): string[] {
-	let tier = new Tier(rnj, id, name, description, cost, contributor_info);
+	let tier = new Tier(rnj, id, name, description, cost, contributor_info, tier_image);
 	setTier(rnj, tier);
 	setTiersByOwner(context.sender, id);
 	logging.log('create a new tier');
@@ -308,3 +353,93 @@ function generateRandomRnj(): Uint8Array {
 }
 
 
+
+
+
+// *********************************************************
+
+// Cross Contract Call
+
+// *********************************************************
+// export function contributionCall(
+// 	fee_rate: u128,
+// 	receiver: string,
+// 	required_info: string,
+// 	tier_purchased: string,
+// 	tier_purchased_index: u128,
+// 	payment: u128,
+// 	message: string
+// ): ContractPromise {
+//   let destination = 'anechoic.testnet';
+//   let details = {fee_rate,
+// 	receiver,
+// 	required_info,
+// 	tier_purchased,
+// 	tier_purchased_index,
+// 	payment,
+// 	message}
+
+// 	let promise = ContractPromise.create(
+// 		destination,
+// 		"initiateContribution",
+// 		details.encode(),
+// 		100000000000000,
+// 		u128.Zero
+//   );
+  
+//   return promise
+  
+// }
+
+export class ContributionAPI {
+	Tribute(
+		fee_rate: u128,
+		receiver: string,
+		required_info: string,
+		tier_purchased: string,
+		tier_purchased_index: u128,
+		payment: u128,
+		message: string
+	): ContractPromise {
+		
+		let destination = 'anechoic.testnet';
+		let args: Tribute = {
+			fee_rate,
+			receiver,
+			required_info,
+			tier_purchased,
+			tier_purchased_index,
+			payment,
+			message,
+		};
+
+		let promise = ContractPromise.create(destination, 'initiateContribution', args.encode(), 100000000000000, u128.Zero);
+
+		return promise;
+	}
+}
+
+export function sendContributionAPI(
+	fee_rate: u128,
+	receiver: string,
+	required_info: string,
+	tier_purchased: string,
+	tier_purchased_index: u128,
+	payment: u128,
+	message: string
+): void {
+
+	let stuff = new ContributionAPI();
+
+	let promise = stuff.Tribute(
+		fee_rate,
+		receiver,
+		required_info,
+		tier_purchased,
+		tier_purchased_index,
+		payment,
+		message
+	);
+
+	promise.returnAsResult();
+}
