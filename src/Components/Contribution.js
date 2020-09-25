@@ -26,22 +26,20 @@ const BOATLOAD_OF_GAS = Big(9)
 	.toFixed();
 
 const Contribution = (props) => {
-
 	//get current near data and access to my echo contract
 	const nearContext = useContext(NearContext);
-  const contract = nearContext.contract[0];
-  const router = useRouter();
-  const fee = props.tier.tierData.cost * .05
-  // console.log(props.tier.tierData[0].cost);
- 
+	const contract = nearContext.contract[0];
+	const router = useRouter();
+	const fee = props.tier.tierData.cost * 0.05;
+	
 
-  console.log(contract);
+	// console.log(props.tier.tierData[0].cost);
 
+	console.log(contract);
 
 	useEffect(() => {
 		contract;
-		return () => {
-		};
+		return () => {};
 	}, []);
 
 	const [status, setStatus] = useState({
@@ -53,6 +51,7 @@ const Contribution = (props) => {
 		required_info: '',
 		payment: '',
 		message: '',
+		fee_rate: "1",
 	});
 	const [visible, setVisible] = useState({
 		isVisible: false,
@@ -99,20 +98,37 @@ const Contribution = (props) => {
 	};
 
 	const handleOnSubmit = async (e) => {
-    e.preventDefault();
+		e.preventDefault();
 		console.log('submitting things');
+		console.log(fee);
+
+		let true_payment = Big(inputs.payment)
+			.times(10 ** 24)
+			.toFixed();
+
+		let true_fee = Big(10)
+			.times(10 ** 24)
+			.toFixed();	
+		
+		console.log(true_payment)	
+		console.log(true_fee)	
+		
 		let params = {
-			fee_rate: fee,
+			fee_rate: true_fee,
 			receiver: props.tier.tierData[0].owner,
+			required_info: inputs.required_info,
 			tier_purchased: props.tier.tierData[0].name,
-			tier_purchased_index: props.tier.tierData[1],
-			payment: inputs.payment,
+			tier_purchased_index: props.tier.tierData[1].toString(),
+			payment: true_payment,
 			message: inputs.message,
 		};
-		
-		// let result = await contract.initiateContribution( {params}, BOATLOAD_OF_GAS)
+		console.log(params);
 
-		// console.log(result)	
+		let result = await contract.initiateContribution({ ...params, BOATLOAD_OF_GAS });
+
+		console.log(result);
+
+		// if (result[0] === )
 
 		// let update = await contract.getContributionsList({
 		// 			contributor: nearContext.user.accountId,
@@ -120,23 +136,22 @@ const Contribution = (props) => {
 
 		// console.log(update);
 
-		contract.initiateContribution( params, BOATLOAD_OF_GAS).then( () => {
-			contract.getContributionsList({
-					contributor: nearContext.user.accountId,
-					}).then( (tributes) => {
-						console.log(tributes)
-					})
-				})
-    
-  };
+		// contract.initiateContribution( {params, BOATLOAD_OF_GAS}).then( () => {
+		// 	contract.getContributionsList({
+		// 			contributor: nearContext.user.accountId,
+		// 			}).then( (tributes) => {
+		// 				console.log(tributes)
+		// 			})
+		// 		})
+	};
 
-  const modalToggle = async () => {
+	const modalToggle = async () => {
 		if (router.query.join) {
 			router.push(`${router.pathname}`);
 		}
 	};
 
-  if (props.tier.tierData) {
+	if (props.tier.tierData) {
 		return (
 			<MDBContainer>
 				<MDBModal isOpen={!!router.query.join} toggle={modalToggle}>
@@ -230,8 +245,7 @@ const Contribution = (props) => {
 				</MDBRow>
 			</MDBContainer>
 		);
-	} 
-	
+	}
 };
 
 export default Contribution;
