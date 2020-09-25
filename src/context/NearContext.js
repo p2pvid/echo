@@ -8,6 +8,8 @@ export const NearContext = React.createContext({
 	signOut: () => {},
 	isLoading: false,
 	setLoading: () => {},
+	userWallet: null,
+	signTX: () => {},
 });
 
 const NearContextProvider = ({ currentUser, nearConfig, wallet, near, nearContract, children }) => {
@@ -15,6 +17,7 @@ const NearContextProvider = ({ currentUser, nearConfig, wallet, near, nearContra
   const nearContent = useState(near)[0];
   const contract = useState(nearContract)
 	const [isLoading, setLoading] = useState(false);
+	const userWallet = useState(wallet)
 
 	const signIn = useCallback(() => {
 		wallet.requestSignIn(nearConfig.contractName, 'NEAR Echo');
@@ -26,6 +29,13 @@ const NearContextProvider = ({ currentUser, nearConfig, wallet, near, nearContra
 		window.location = '/';
 		setLoading(false);
 	}, [wallet]);
+	console.log(wallet)
+
+	const signTX = useCallback((TX) => {
+		wallet.requestSignTransactions([TX()]);
+		// wallet.requestSignIn(nearConfig.contractName, 'NEAR Echo');
+	}, [wallet]);
+	
 
 	return (
 		<NearContext.Provider
@@ -36,7 +46,9 @@ const NearContextProvider = ({ currentUser, nearConfig, wallet, near, nearContra
 				isLoading,
 				setLoading,
         nearContent,
-        contract,
+				contract,
+				wallet,
+				signTX,
 			}}
 		>
 			{children}

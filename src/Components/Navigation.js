@@ -31,6 +31,10 @@ const NavbarPage = (props) => {
 		nearContext.signIn();
 	};
 
+	const signOut = () => {
+		nearContext.signOut();
+	}
+
 
 	return (
 		<MDBNavbar
@@ -86,7 +90,7 @@ const NavbarPage = (props) => {
 											<MDBCol size="5">
 												<a href="/" target="blank">
 													{/* <MDBIcon size="2x" icon="wallet" /> */}
-													<MDBBtn outline>Logout</MDBBtn>
+													<MDBBtn onClick={signOut} outline>Logout</MDBBtn>
 												</a>
 											</MDBCol>
 										</Fragment>

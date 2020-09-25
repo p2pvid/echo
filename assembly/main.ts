@@ -218,7 +218,8 @@ export function initiateContribution(
 	message: string
 ): string[] {
 	let rnj = generateRandomRnj();
-	let id = base64.encode(rnj);
+  let id = base64.encode(rnj);
+  logging.log(context.sender + ' started a contribution');
 	return makeContribution(
 		rnj,
 		id,
@@ -249,7 +250,7 @@ export function initiateContribution(
   // let tx_fee = calculateFees(payment, fee_rate)
 
   // sends payment to owner and fees to anechoic
-  ContractPromiseBatch.create(receiver).transfer(payment);
+  ContractPromiseBatch.create(receiver).transfer(context.attachedDeposit);
   ContractPromiseBatch.create('echo-fees.anechoic.testnet').transfer(fee_rate);
 
   
@@ -257,7 +258,7 @@ export function initiateContribution(
   setContributionsByContributor(context.sender, id)
   setContributionsByReceiver(receiver, id);
   logging.log(context.sender + ' is making a new contribution');
-	logging.log(id);
+	logging.log(context.attachedDeposit);
 	return [context.sender, id];
 }
 
@@ -371,7 +372,8 @@ function generateRandomRnj(): Uint8Array {
 // 	message: string
 // ): ContractPromise {
 //   let destination = 'anechoic.testnet';
-//   let details = {fee_rate,
+  
+//   let details = fee_rate,
 // 	receiver,
 // 	required_info,
 // 	tier_purchased,
@@ -384,15 +386,14 @@ function generateRandomRnj(): Uint8Array {
 // 		"initiateContribution",
 // 		details.encode(),
 // 		100000000000000,
-// 		u128.Zero
+// 		payment
 //   );
   
 //   return promise
   
 // }
 
-export class ContributionAPI {
-	Tribute(
+export function initContributionAPI(
 		fee_rate: u128,
 		receiver: string,
 		required_info: string,
@@ -400,46 +401,84 @@ export class ContributionAPI {
 		tier_purchased_index: u128,
 		payment: u128,
 		message: string
-	): ContractPromise {
-		
-		let destination = 'anechoic.testnet';
-		let args: Tribute = {
+	): string[] {
+
+    let rnj = generateRandomRnj();
+    let id = base64.encode(rnj);
+    
+		let contribution = new Contribution(
+			rnj,
+			id,
 			fee_rate,
 			receiver,
 			required_info,
 			tier_purchased,
 			tier_purchased_index,
 			payment,
-			message,
-		};
+			message
+    );
+    
 
-		let promise = ContractPromise.create(destination, 'initiateContribution', args.encode(), 100000000000000, u128.Zero);
+    // sends payment to owner and fees to anechoic
+    ContractPromiseBatch.create('echo-fees.anechoic.testnet').transfer(fee_rate);
+    ContractPromiseBatch.create(receiver).transfer(context.attachedDeposit);
 
-		return promise;
+		sendContribution(rnj, contribution);
+		setContributionsByContributor(context.sender, id);
+		setContributionsByReceiver(receiver, id);
+		logging.log(context.sender + ' is making a new contribution');
+		logging.log(context.attachedDeposit);
+		return [context.sender, id];
 	}
-}
 
-export function sendContributionAPI(
-	fee_rate: u128,
-	receiver: string,
-	required_info: string,
-	tier_purchased: string,
-	tier_purchased_index: u128,
-	payment: u128,
-	message: string
-): void {
+// export function sendContributionAPI(
+// 	fee_rate: u128,
+// 	receiver: string,
+// 	required_info: string,
+// 	tier_purchased: string,
+// 	tier_purchased_index: u128,
+// 	payment: u128,
+// 	message: string
+// ): void {
 
-	let stuff = new ContributionAPI();
+// 	let stuff = new initContributionAPI();
 
-	let promise = stuff.Tribute(
-		fee_rate,
-		receiver,
-		required_info,
-		tier_purchased,
-		tier_purchased_index,
-		payment,
-		message
-	);
+// 	let promise = stuff.Tribute(
+// 		fee_rate,
+// 		receiver,
+// 		required_info,
+// 		tier_purchased,
+// 		tier_purchased_index,
+// 		payment,
+// 		message
+// 	);
 
-	promise.returnAsResult();
-}
+// 	promise.returnAsResult();
+// }
+
+
+
+// export function initTribute(
+// 	fee_rate: u128,
+// 	receiver: string,
+// 	required_info: string,
+// 	tier_purchased: string,
+// 	tier_purchased_index: u128,
+// 	payment: u128,
+// 	message: string
+// ): void {
+
+//   let destination = "anechoic.testnet";
+
+//   let params = [fee_rate, receiver, required_info, tier_purchased, tier_purchased_index, payment, message]
+
+// 	let promise = ContractPromise.create(
+// 		destination, 
+// 		"initContributionAPI", 
+// 		params.encode(),
+// 		100000000000000, 
+// 		payment
+// 	);
+  
+//   promise.returnAsResult(); 
+// }

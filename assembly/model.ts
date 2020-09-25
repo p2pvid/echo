@@ -1,4 +1,4 @@
-import { context, PersistentMap, u256, u128 } from 'near-sdk-as';
+import { context, PersistentMap, u256, u128, ContractPromiseBatch,  } from 'near-sdk-as';
 
 @nearBindgen
 export class TierList {
@@ -45,6 +45,7 @@ export class Contribution {
 		public payment: u128,
 		public message: string // public fufillment: string, // public purchase_history: Array<string>, // public total_paid: u64,
 	) // public active: bool
+
 	{
 		this.contributor = context.sender;
 	}

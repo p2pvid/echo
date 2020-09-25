@@ -17,6 +17,7 @@ import {
   MDBModalBody
 } from 'mdbreact';
 import { useRouter } from 'next/router';
+import * as nearAPI from 'near-api-js'
 
 import { NearContext } from '../context/NearContext';
 import Big from 'big.js';
@@ -29,13 +30,18 @@ const Contribution = (props) => {
 	//get current near data and access to my echo contract
 	const nearContext = useContext(NearContext);
 	const contract = nearContext.contract[0];
+	const wallet = nearContext.wallet
 	const router = useRouter();
 	const fee = props.tier.tierData.cost * 0.05;
+
+	const signTX = (TX) => {
+		nearContext.signTX(TX)
+	}
 	
 
 	// console.log(props.tier.tierData[0].cost);
 
-	console.log(contract);
+	console.log(nearContext.user);
 
 	useEffect(() => {
 		contract;
@@ -97,36 +103,57 @@ const Contribution = (props) => {
 		});
 	};
 
+	const transfer = async () => {
+
+	}
+
 	const handleOnSubmit = async (e) => {
 		e.preventDefault();
 		console.log('submitting things');
 		console.log(fee);
+		console.log(inputs.payment);
 
 		let true_payment = Big(inputs.payment)
 			.times(10 ** 24)
 			.toFixed();
 
-		let true_fee = Big(10)
+		let final_payment = Big(parseInt(inputs.payment) + 1)
 			.times(10 ** 24)
-			.toFixed();	
-		
-		console.log(true_payment)	
-		console.log(true_fee)	
-		
+			.toFixed();
+	
+
+		console.log(true_payment);
+		console.log(final_payment);
+
 		let params = {
-			fee_rate: true_fee,
+			fee_rate: "1",
 			receiver: props.tier.tierData[0].owner,
 			required_info: inputs.required_info,
 			tier_purchased: props.tier.tierData[0].name,
 			tier_purchased_index: props.tier.tierData[1].toString(),
-			payment: true_payment,
+			payment: final_payment,
 			message: inputs.message,
 		};
 		console.log(params);
 
-		let result = await contract.initiateContribution({ ...params, BOATLOAD_OF_GAS });
+		let cWalletAcct = wallet._connectedAccount;
 
-		console.log(result);
+		let sender = nearContext.user.accountId
+		// let deposit = await nearAPI.transactions.functionCall('initiateContribution', params, BOATLOAD_OF_GAS, final_payment);
+		let paid = await contract.initiateContribution({ sender, ...params, BOATLOAD_OF_GAS, final_payment });
+		// let keys = await cWalletAcct.getAccessKeys()
+		console.log(paid);
+
+
+		// console.log(sender);
+		// console.log(keys);
+	
+
+		// let paid = await sender.signAndSendTransaction('anechoic.testnet', transfer);
+
+		// let truth = await nearContext.signTX(contract.initiateContribution({...params, BOATLOAD_OF_GAS }));
+		// let result = await contract.initiateContribution({ ...params, BOATLOAD_OF_GAS });
+
 
 		// if (result[0] === )
 

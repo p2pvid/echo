@@ -2,7 +2,7 @@ import React, { Component, useEffect, useState } from 'react';
 import Navigation from './Navigation';
 // import Footer from './Footer';
 import { MDBBtn } from 'mdbreact';
-import { initContract, login, logout } from '../utils';
+import { login, logout } from '../utils';
 import * as nearlib from 'near-api-js';
 import NearContextProvider from '../context/NearContext';
 import ContractContextProvider from '../hooks/contract';
