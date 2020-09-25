@@ -2,6 +2,7 @@ import React, { Component, useState, useContext, useEffect } from 'react';
 import { MDBContainer, MDBTabPane, MDBTabContent, MDBNav, MDBNavItem, MDBNavLink, MDBIcon, MDBRow, MDBCol,MDBCard, MDBCardBody, MDBInput, MDBBtn } from 'mdbreact';
 import Layout from '../../Components/UserPages/UserLayout';
 import { useRouter } from 'next/router'
+import axios from 'axios';
 
 import { NearContext } from '../../context/NearContext';
 import Big from 'big.js';
@@ -41,6 +42,8 @@ const Create = (props) => {
 		description: '',
 		contributor_info: '',
 		image_url: '',
+		url: '',
+		file: '',
 	});
 	const [visible, setVisible] = useState({
 		isVisible: false,
@@ -67,6 +70,8 @@ const Create = (props) => {
 				description: '',
 				contributor_info: '',
 				image_url: '',
+				url: '',
+				file: '',
 			});
 		} else {
 			setStatus({
@@ -114,6 +119,7 @@ const Create = (props) => {
 						console.log(tiers);
 					});
 			});
+			
 
 		// setStatus((prevStatus) => ({ ...prevStatus, submitting: true }));
 		// axios({
@@ -127,6 +133,56 @@ const Create = (props) => {
 		// 	.catch((error) => {
 		// 		handleServerResponse(false, error.response.data.error);
 		// 	});
+	};
+
+
+
+	const handleUpload = (ev) => {
+		//
+		//
+		//
+		//THIS IS WHERE YOU SEND TO SKYNET
+		//
+		//
+		//
+
+		let file = uploadInput.files[0];
+		// Split the filename to get the name and type
+		let fileParts = uploadInput.files[0].name.split('.');
+		let fileName = fileParts[0];
+		let fileType = fileParts[1];
+		console.log('Preparing the upload');
+		axios
+			.post('http://localhost:3000/api/sign-s3', {
+				fileName: fileName,
+				fileType: fileType,
+			})
+			.then((response) => {
+				var returnData = response.data.data.returnData;
+				var signedRequest = returnData.signedRequest;
+				var url = returnData.url;
+				this.setState({ url: url });
+				console.log('Recieved a signed request ' + signedRequest);
+
+				// Put the fileType in the headers for the upload
+				var options = {
+					headers: {
+						'Content-Type': fileType,
+					},
+				};
+				axios
+					.put(signedRequest, file, options)
+					.then((result) => {
+						console.log('Response from s3');
+						this.setState({ success: true });
+					})
+					.catch((error) => {
+						alert('ERROR ' + JSON.stringify(error));
+					});
+			})
+			.catch((error) => {
+				alert(JSON.stringify(error));
+			});
 	};
 
 	return (
@@ -163,6 +219,13 @@ const Create = (props) => {
 										value={inputs.image_url}
 										onChange={handleOnChange}
 										required
+									/>
+									<input
+										onChange={handleOnChange}
+										// ref={(ref) => {
+										// 	setInputs.file = ref;
+										// }}
+										type="file"
 									/>
 									<label className="mt-3">Set Price</label>
 									<input
