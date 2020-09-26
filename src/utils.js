@@ -8,11 +8,12 @@ const nearConfig = getConfig(process.env.NODE_ENV || 'development')
 
 import { SkynetClient } from 'skynet-js';
 
-const client = new SkynetClient();
 
+const client = new SkynetClient('https://siasky.net/');
 export async function toSkynet(file) {
-	const skylink = await client.uploadFile(file);
-	console.log(`Upload successful, skylink: ${skylink}`);
+	console.log(client)
+	let {skylink}  = await client.uploadFile(file);
+	console.log("Upload successful, skylink: " + `${skylink}`);
 	return skylink
 	
 };

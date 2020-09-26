@@ -94,37 +94,38 @@ const Create = (props) => {
 	};
 
 	const handleOnSubmit = async (e) => {
-		e.preventDefault();
+		
 		console.log(inputs.file)
+		console.log(selectedFiles.file)
 
 		const skylink = await toSkynet(inputs.file)
 
 
 		console.log('New Skylink: ' + skylink);
 		console.log('submitting things');
-		// contract
-		// 	.createTier(
-		// 		{
-		// 			name: inputs.name,
-		// 			cost: inputs.cost,
-		// 			description: inputs.description,
-		// 			contributor_info: [inputs.contributor_info],
-		// 			tier_image: inputs.image_url,
-		// 		},
-		// 		BOATLOAD_OF_GAS
-		// 		// Big(donation.value || '0')
-		// 		// 	.times(10 ** 24)
-		// 		// 	.toFixed()
-		// 	)
-		// 	.then(() => {
-		// 		contract
-		// 			.getTiersList({
-		// 				owner: nearContext.user.accountId,
-		// 			})
-		// 			.then((tiers) => {
-		// 				console.log(tiers);
-		// 			});
-		// 	});
+		contract
+			.createTier(
+				{
+					name: inputs.name,
+					cost: inputs.cost,
+					description: inputs.description,
+					contributor_info: [inputs.contributor_info],
+					tier_image: skylink,
+				},
+				BOATLOAD_OF_GAS
+				// Big(donation.value || '0')
+				// 	.times(10 ** 24)
+				// 	.toFixed()
+			)
+			.then(() => {
+				contract
+					.getTiersList({
+						owner: nearContext.user.accountId,
+					})
+					.then((tiers) => {
+						console.log(tiers);
+					});
+			});
 			
 	};
 
