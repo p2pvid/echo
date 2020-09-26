@@ -6,6 +6,18 @@ import * as nearlib from 'near-api-js';
 const nearConfig = getConfig(process.env.NODE_ENV || 'development')
 
 
+import { SkynetClient } from 'skynet-js';
+
+
+const client = new SkynetClient('https://siasky.net/');
+export async function toSkynet(file) {
+	console.log(client)
+	let {skylink}  = await client.uploadFile(file);
+	console.log("Upload successful, skylink: " + `${skylink}`);
+	return skylink
+	
+};
+
 // Initialize contract & set global variables
 export async function initContract() {
   // Initialize connection to the NEAR testnet
