@@ -7,6 +7,12 @@ import axios from 'axios';
 import { NearContext } from '../../context/NearContext';
 import Big from 'big.js';
 
+
+const { SkynetClient } = require('@nebulous/skynet');
+
+// create a client
+const client = new SkynetClient();
+
 const BOATLOAD_OF_GAS = Big(3)
 	.times(10 ** 13)
 	.toFixed();
@@ -93,9 +99,21 @@ const Create = (props) => {
 		});
 	};
 
-	const handleOnSubmit = (e) => {
+	const handleOnSubmit = async (e) => {
 		e.preventDefault();
+
+
+		
+
+
 		console.log('submitting things');
+
+		console.log("test");
+		let response_sn = await client.uploadFile(JSON.stringify(inputs.file));
+		console.log(`Upload successful, skylink: ${response_sn}`);
+		inputs.image_url = response_sn;
+		console.log("test completed");
+
 		contract
 			.createTier(
 				{
@@ -135,7 +153,7 @@ const Create = (props) => {
 		// 	});
 	};
 
-
+	
 
 	const handleUpload = (ev) => {
 		//
@@ -145,6 +163,13 @@ const Create = (props) => {
 		//
 		//
 		//
+
+		// 
+
+		//let response = await client.uploadFile(inputs.file);
+		//console.log(`Upload successful, skylink: ${response}`);
+		//inputs.image_url = response;
+
 
 		let file = uploadInput.files[0];
 		// Split the filename to get the name and type
@@ -218,13 +243,14 @@ const Create = (props) => {
 										type="text"
 										value={inputs.image_url}
 										onChange={handleOnChange}
-										required
+										//required
 									/>
 									<input
 										onChange={handleOnChange}
 										// ref={(ref) => {
 										// 	setInputs.file = ref;
 										// }}
+										value={inputs.file}
 										type="file"
 									/>
 									<label className="mt-3">Set Price</label>
@@ -352,5 +378,8 @@ const Create = (props) => {
 		</Layout>
 	);
 }
+
+
+
 
 export default Create
