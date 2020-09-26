@@ -3,7 +3,8 @@ import { MDBContainer, MDBTabPane, MDBTabContent, MDBNav, MDBNavItem, MDBNavLink
 import Layout from '../../Components/UserPages/UserLayout';
 import { useRouter } from 'next/router'
 import axios from 'axios';
-
+import { toSkynet } from '../../utils'
+import { SkynetClient } from 'skynet-js';
 import { NearContext } from '../../context/NearContext';
 import Big from 'big.js';
 
@@ -15,6 +16,7 @@ const Create = (props) => {
 	//get current near data and access to my echo contract
 	const nearContext = useContext(NearContext);
 	const contract = nearContext.contract[0];
+	const client = new SkynetClient();
 
 	console.log(contract);
 
@@ -24,12 +26,6 @@ const Create = (props) => {
 
 	const router = useRouter();
 
-	useEffect(() => {
-		contract;
-		return () => {
-			cleanup;
-		};
-	}, []);
 
 	const [status, setStatus] = useState({
 		submitted: false,
@@ -56,6 +52,30 @@ const Create = (props) => {
 			});
 		}
 	};
+
+
+// const toSkynet = async () => {
+// 	try {
+// 		const { skylink } = await client.uploadFile(inputs.file);
+// 		console.log("Upload successful, skylink: " + `${skylink}`);
+// 		setInputs.image_url( {skylink} );
+// 		return { skylink };
+// 	} catch (error) {
+// 		console.log(error);
+// 		return console;
+// 	}
+
+// 	return skylink
+// }
+
+// async function toSkynet() {
+// 	try {
+// 		const  skylink  = await client.uploadFile(inputs.file);
+// 		return skylink
+// 	} catch (error) {
+// 		console.log(error);
+// 	}
+// }
 
 	const handleServerResponse = (ok, msg) => {
 		if (ok) {
@@ -93,32 +113,38 @@ const Create = (props) => {
 		});
 	};
 
-	const handleOnSubmit = (e) => {
+	const handleOnSubmit = async (e) => {
 		e.preventDefault();
+		console.log(inputs.file)
+
+		const skylink = await toSkynet(inputs.file)
+
+
+		console.log('New Skylink: ' + skylink);
 		console.log('submitting things');
-		contract
-			.createTier(
-				{
-					name: inputs.name,
-					cost: inputs.cost,
-					description: inputs.description,
-					contributor_info: [inputs.contributor_info],
-					tier_image: inputs.image_url,
-				},
-				BOATLOAD_OF_GAS
-				// Big(donation.value || '0')
-				// 	.times(10 ** 24)
-				// 	.toFixed()
-			)
-			.then(() => {
-				contract
-					.getTiersList({
-						owner: nearContext.user.accountId,
-					})
-					.then((tiers) => {
-						console.log(tiers);
-					});
-			});
+		// contract
+		// 	.createTier(
+		// 		{
+		// 			name: inputs.name,
+		// 			cost: inputs.cost,
+		// 			description: inputs.description,
+		// 			contributor_info: [inputs.contributor_info],
+		// 			tier_image: inputs.image_url,
+		// 		},
+		// 		BOATLOAD_OF_GAS
+		// 		// Big(donation.value || '0')
+		// 		// 	.times(10 ** 24)
+		// 		// 	.toFixed()
+		// 	)
+		// 	.then(() => {
+		// 		contract
+		// 			.getTiersList({
+		// 				owner: nearContext.user.accountId,
+		// 			})
+		// 			.then((tiers) => {
+		// 				console.log(tiers);
+		// 			});
+		// 	});
 			
 
 		// setStatus((prevStatus) => ({ ...prevStatus, submitting: true }));
@@ -209,7 +235,7 @@ const Create = (props) => {
 										onChange={handleOnChange}
 										required
 									/>
-									<label className="mt-3">Tier Image Url</label>
+									{/* <label className="mt-3">Tier Image Url</label>
 									<input
 										label="Tier Title"
 										id="image_url"
@@ -219,12 +245,13 @@ const Create = (props) => {
 										value={inputs.image_url}
 										onChange={handleOnChange}
 										required
-									/>
+									/> */}
 									<input
 										onChange={handleOnChange}
 										// ref={(ref) => {
 										// 	setInputs.file = ref;
 										// }}
+										id='file'
 										type="file"
 									/>
 									<label className="mt-3">Set Price</label>
