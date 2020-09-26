@@ -11,99 +11,58 @@ const BOATLOAD_OF_GAS = Big(3)
 	.times(10 ** 13)
 	.toFixed();
 
-const Create = (props) => {
+class Create extends Component  {
 	//get current near data and access to my echo contract
-	const nearContext = useContext(NearContext);
-	const contract = nearContext.contract[0];
-
-	console.log(contract);
-
-	const [activeTab, setActiveTab] = useState({
-		activeTab: '1',
-	});
-
-	const router = useRouter();
-
-	useEffect(() => {
-		contract;
-		return () => {
-			cleanup;
-		};
-	}, []);
-
-	const [status, setStatus] = useState({
-		submitted: false,
-		submitting: false,
-		info: { error: false, msg: null },
-	});
-	const [inputs, setInputs] = useState({
+	static contextType = NearContext
+	
+	state = {
+		success: false,
+		url: '',
+		file: '',
 		name: '',
 		cost: '',
 		description: '',
 		contributor_info: '',
 		image_url: '',
-		url: '',
-		file: '',
-	});
-	const [visible, setVisible] = useState({
-		isVisible: false,
-	});
+		fileStream: '',
+	}
 
-	const checkModal = () => {
-		if (router.query.contact) {
-			setVisible({
-				isVisible: true,
-			});
-		}
+	componentDidMount() {
+		const nearContext = this.NearContext;
+		console.log(nearContext);
+		// const contract = this.nearContext.contract[0];	
+	}
+	
+
+
+		handleChange = (ev) => {
+		console.log(ev);
+		this.setState({ success: false, url: '' });
 	};
 
-	const handleServerResponse = (ok, msg) => {
-		if (ok) {
-			setStatus({
-				submitted: true,
-				submitting: false,
-				info: { error: false, msg: msg },
-			});
-			setInputs({
-				name: '',
-				cost: '',
-				description: '',
-				contributor_info: '',
-				image_url: '',
-				url: '',
-				file: '',
-			});
-		} else {
-			setStatus({
-				info: { error: true, msg: msg },
-			});
-		}
+	
+	handleChooseFile = (ev) => {
+		hiddenFileInput.current.click();
+	}
+
+
+	handleOnChange = (e) => {
+		this.setState({ [e.target.id]: e.target.value  })
 	};
 
-	const handleOnChange = (e) => {
-		e.persist();
-		setInputs((prev) => ({
-			...prev,
-			[e.target.id]: e.target.value,
-		}));
-		setStatus({
-			submitted: false,
-			submitting: false,
-			info: { error: false, msg: null },
-		});
-	};
-
-	const handleOnSubmit = (e) => {
+	handleOnSubmit = (e) => {
 		e.preventDefault();
+		
 		console.log('submitting things');
-		contract
+
+		this.contract
 			.createTier(
 				{
-					name: inputs.name,
-					cost: inputs.cost,
-					description: inputs.description,
-					contributor_info: [inputs.contributor_info],
-					tier_image: inputs.image_url,
+					name: this.state.name,
+					cost: this.state.cost,
+					description: this.state.description,
+					contributor_info: [this.state.contributor_info],
+					tier_image: this.state.image_url,
 				},
 				BOATLOAD_OF_GAS
 				// Big(donation.value || '0')
@@ -111,7 +70,7 @@ const Create = (props) => {
 				// 	.toFixed()
 			)
 			.then(() => {
-				contract
+				this.contract
 					.getTiersList({
 						owner: nearContext.user.accountId,
 					})
@@ -121,28 +80,17 @@ const Create = (props) => {
 			});
 			
 
-		// setStatus((prevStatus) => ({ ...prevStatus, submitting: true }));
-		// axios({
-		// 	method: 'POST',
-		// 	url: 'https://formspree.io/mvowlqbq',
-		// 	data: inputs,
-		// })
-		// 	.then((response) => {
-		// 		handleServerResponse(true, 'Thank you, your message has been submitted.');
-		// 	})
-		// 	.catch((error) => {
-		// 		handleServerResponse(false, error.response.data.error);
-		// 	});
 	};
 
 
 
-	const handleUpload = (ev) => {
+	handleUpload = (ev) => {
 		//
 		//
 		//
-		//THIS IS WHERE YOU SEND TO SKYNET
-		//
+		// somehow set the response of skynet to:  this.state.image_url
+		// 
+		// then trigger the submit function?
 		//
 		//
 
@@ -153,7 +101,7 @@ const Create = (props) => {
 		let fileType = fileParts[1];
 		console.log('Preparing the upload');
 		axios
-			.post('http://localhost:3000/api/sign-s3', {
+			.post('http://localhost:3000/', {
 				fileName: fileName,
 				fileType: fileType,
 			})
@@ -185,6 +133,7 @@ const Create = (props) => {
 			});
 	};
 
+	render(){
 	return (
 		<Layout>
 			<MDBContainer>
@@ -197,7 +146,7 @@ const Create = (props) => {
 								</MDBRow>
 							</div>
 							<MDBCardBody className="mx-4 mt-2">
-								<form onSubmit={handleOnSubmit}>
+								<form >
 									<label className="mt-3">Tier Title</label>
 									<input
 										label="Tier Title"
@@ -205,28 +154,41 @@ const Create = (props) => {
 										group
 										className="form-control"
 										type="text"
-										value={inputs.name}
-										onChange={handleOnChange}
+										value={this.state.name}
+										onChange={this.handleOnChange}
 										required
 									/>
 									<label className="mt-3">Tier Image Url</label>
-									<input
+									{/* <input
 										label="Tier Title"
 										id="image_url"
 										group
 										className="form-control"
 										type="text"
-										value={inputs.image_url}
+										value={this.image_url}
 										onChange={handleOnChange}
 										required
-									/>
-									<input
-										onChange={handleOnChange}
-										// ref={(ref) => {
-										// 	setInputs.file = ref;
-										// }}
-										type="file"
-									/>
+									/> */}
+									<div className="App">
+										<input
+											onChange={this.handleChange}
+											ref={(ref) => {
+												this.uploadInput = ref;
+											}}
+											type="file"
+										/>
+										<br />
+										{/* <button className="mx-auto" onClick={this.handleUpload}>
+											UPLOAD
+										</button> */}
+									</div>
+									<center>
+										{/* {this.state.success ? <Success_message /> : null} */}
+										{/* <MDBBtn className="btn btn-outline-teal mt-4 mx-auto" onClick={this.handleUpload}>
+											Send to SkyNet
+											<MDBIcon far icon="paper-plane" className="ml-2" />
+										</MDBBtn> */}
+									</center>
 									<label className="mt-3">Set Price</label>
 									<input
 										id="cost"
@@ -234,8 +196,8 @@ const Create = (props) => {
 										className="form-control"
 										group
 										type="text"
-										value={inputs.cost}
-										onChange={handleOnChange}
+										value={this.state.cost}
+										onChange={this.handleOnChange}
 										required
 									/>
 									<label className="mt-3">Tier description</label>
@@ -246,8 +208,8 @@ const Create = (props) => {
 										group
 										type="textarea"
 										rows="4"
-										value={inputs.description}
-										onChange={handleOnChange}
+										value={this.state.description}
+										onChange={this.handleOnChange}
 										required
 									/>
 									<label className="mt-3">Required Info</label>
@@ -258,13 +220,13 @@ const Create = (props) => {
 										group
 										type="textarea"
 										rows="4"
-										value={inputs.contributor_info}
-										onChange={handleOnChange}
+										value={this.state.contributor_info}
+										onChange={this.handleOnChange}
 										required
 									/>
 
 									<div className="text-center mb-4 mt-5">
-										<MDBBtn color="danger" type="submit" className="btn-block z-depth-2">
+										<MDBBtn color="danger" onClick={this.handleUpload} className="btn-block z-depth-2">
 											Submit
 										</MDBBtn>
 									</div>
@@ -351,6 +313,6 @@ const Create = (props) => {
 		 */}
 		</Layout>
 	);
-}
+}}
 
 export default Create
