@@ -42,6 +42,7 @@ const Create = (props) => {
 		url: '',
 		file: '',
 	});
+	
 
 	const [selectedFiles, setSelectedFiles] = useState(undefined);
 
@@ -95,10 +96,16 @@ const Create = (props) => {
 
 	const handleOnSubmit = async (e) => {
 		
-		console.log(inputs.file)
 		console.log(selectedFiles.file)
+		console.log(selectedFiles.file)
+		
+		let skylink
+		
+		if (selectedFiles.file) {
+			skylink = await toSkynet(selectedFiles.file);
+		} 
 
-		const skylink = await toSkynet(inputs.file)
+		console.log(skylink)
 
 		
 		let link = skylink.toString()
@@ -106,37 +113,37 @@ const Create = (props) => {
 		
 
 
-		// console.log('New Skylink: ' + skylink);
-		// console.log('submitting things');
-		// contract
-		// 	.createTier(
-		// 		{
-		// 			name: inputs.name,
-		// 			cost: inputs.cost,
-		// 			description: inputs.description,
-		// 			contributor_info: [inputs.contributor_info],
-		// 			tier_image: inputs.image_url,
-		// 		},
-		// 		BOATLOAD_OF_GAS
-		// 		// Big(donation.value || '0')
-		// 		// 	.times(10 ** 24)
-		// 		// 	.toFixed()
-		// 	)
-		// 	.then(() => {
-		// 		contract
-		// 			.getTiersList({
-		// 				owner: nearContext.user.accountId,
-		// 			})
-		// 			.then((tiers) => {
-		// 				console.log(tiers);
-		// 			});
-		// 	});
+		console.log('New Skylink: ' + skylink);
+		console.log('submitting things');
+		contract
+			.createTier(
+				{
+					name: inputs.name,
+					cost: inputs.cost,
+					description: inputs.description,
+					contributor_info: [inputs.contributor_info],
+					tier_image: inputs.image_url,
+				},
+				BOATLOAD_OF_GAS
+				// Big(donation.value || '0')
+				// 	.times(10 ** 24)
+				// 	.toFixed()
+			)
+			.then(() => {
+				contract
+					.getTiersList({
+						owner: nearContext.user.accountId,
+					})
+					.then((tiers) => {
+						console.log(tiers);
+					});
+			});
 			
 	};
 
 	const selectFile = (event) => {
-		setInputs({file: event.target.files});
-		setSelectedFiles(event.target.files);
+		// setInputs({file: event.target.files});
+		setSelectedFiles({file: event.target.files});
 	};
 
 	const handleUpload = (ev) => {

@@ -12,9 +12,10 @@ import { SkynetClient } from 'skynet-js';
 const client = new SkynetClient('https://siasky.net/');
 export async function toSkynet(file) {
 	console.log(client)
-	let {skylink}  = await client.uploadFile(file);
+	let skylink  = await client.uploadFile(file);
 	console.log("Upload successful, skylink: " + `${skylink}`);
-	return skylink
+	
+	return skylink 
 	
 };
 
