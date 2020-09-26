@@ -6,14 +6,15 @@ import * as nearlib from 'near-api-js';
 const nearConfig = getConfig(process.env.NODE_ENV || 'development')
 
 
-const { SkynetClient } = require('@nebulous/skynet');
+import { SkynetClient } from 'skynet-js';
 
 const client = new SkynetClient();
 
 export async function toSkynet(file) {
 	const skylink = await client.uploadFile(file);
-	return skylink
 	console.log(`Upload successful, skylink: ${skylink}`);
+	return skylink
+	
 };
 
 // Initialize contract & set global variables

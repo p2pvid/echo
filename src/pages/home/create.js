@@ -32,6 +32,7 @@ const Create = (props) => {
 		submitting: false,
 		info: { error: false, msg: null },
 	});
+
 	const [inputs, setInputs] = useState({
 		name: '',
 		cost: '',
@@ -41,6 +42,9 @@ const Create = (props) => {
 		url: '',
 		file: '',
 	});
+
+	const [selectedFiles, setSelectedFiles] = useState(undefined);
+
 	const [visible, setVisible] = useState({
 		isVisible: false,
 	});
@@ -52,30 +56,6 @@ const Create = (props) => {
 			});
 		}
 	};
-
-
-// const toSkynet = async () => {
-// 	try {
-// 		const { skylink } = await client.uploadFile(inputs.file);
-// 		console.log("Upload successful, skylink: " + `${skylink}`);
-// 		setInputs.image_url( {skylink} );
-// 		return { skylink };
-// 	} catch (error) {
-// 		console.log(error);
-// 		return console;
-// 	}
-
-// 	return skylink
-// }
-
-// async function toSkynet() {
-// 	try {
-// 		const  skylink  = await client.uploadFile(inputs.file);
-// 		return skylink
-// 	} catch (error) {
-// 		console.log(error);
-// 	}
-// }
 
 	const handleServerResponse = (ok, msg) => {
 		if (ok) {
@@ -146,22 +126,12 @@ const Create = (props) => {
 		// 			});
 		// 	});
 			
-
-		// setStatus((prevStatus) => ({ ...prevStatus, submitting: true }));
-		// axios({
-		// 	method: 'POST',
-		// 	url: 'https://formspree.io/mvowlqbq',
-		// 	data: inputs,
-		// })
-		// 	.then((response) => {
-		// 		handleServerResponse(true, 'Thank you, your message has been submitted.');
-		// 	})
-		// 	.catch((error) => {
-		// 		handleServerResponse(false, error.response.data.error);
-		// 	});
 	};
 
-
+	const selectFile = (event) => {
+		setInputs({file: event.target.files});
+		setSelectedFiles(event.target.files);
+	};
 
 	const handleUpload = (ev) => {
 		//
@@ -247,7 +217,7 @@ const Create = (props) => {
 										required
 									/> */}
 									<input
-										onChange={handleOnChange}
+										onChange={selectFile}
 										// ref={(ref) => {
 										// 	setInputs.file = ref;
 										// }}
@@ -291,7 +261,7 @@ const Create = (props) => {
 									/>
 
 									<div className="text-center mb-4 mt-5">
-										<MDBBtn color="danger" type="submit" className="btn-block z-depth-2">
+										<MDBBtn color="danger" onClick={handleOnSubmit} className="btn-block z-depth-2">
 											Submit
 										</MDBBtn>
 									</div>
