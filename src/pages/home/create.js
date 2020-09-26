@@ -7,6 +7,25 @@ import axios from 'axios';
 import { NearContext } from '../../context/NearContext';
 import Big from 'big.js';
 
+const { SkynetClient } = require('@nebulous/skynet');
+
+
+// create a client
+const client = new SkynetClient();
+
+
+async function uploadExample(file) {
+	try {
+		const { skylink } = await client.uploadFile(file);
+		console.log(`Upload successful, skylink: ${skylink}`);
+		return skylink;
+	} catch (error) {
+		console.log(error)
+		return "";
+	}
+}
+
+
 const BOATLOAD_OF_GAS = Big(3)
 	.times(10 ** 13)
 	.toFixed();
@@ -83,8 +102,10 @@ class Create extends Component  {
 	};
 
 
+	
 
-	handleUpload = (ev) => {
+
+	handleUpload = async (ev) => {
 		//
 		//
 		//
@@ -94,12 +115,21 @@ class Create extends Component  {
 		//
 		//
 
-		let file = uploadInput.files[0];
+		let file = this.uploadInput.files[0];
+
+		let response = uploadExample(file)
+		//let response = await client.uploadFile(file);
+		console.log(`Upload successful, skylink 2: ${response}`);
+
+
 		// Split the filename to get the name and type
-		let fileParts = uploadInput.files[0].name.split('.');
+		let fileParts = this.uploadInput.files[0].name.split('.');
 		let fileName = fileParts[0];
 		let fileType = fileParts[1];
 		console.log('Preparing the upload');
+
+		this.setState({ image_url: response });
+		//this.handleOnSubmit()
 		axios
 			.post('http://localhost:3000/', {
 				fileName: fileName,
