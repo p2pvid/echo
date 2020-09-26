@@ -17,7 +17,7 @@ const NearContextProvider = ({ currentUser, nearConfig, wallet, near, nearContra
 	const [isLoading, setLoading] = useState(false);
 
 	const signIn = useCallback(() => {
-		wallet.requestSignIn(nearConfig.contractName, 'NEAR Echo');
+		wallet.requestSignIn('', 'NEAR Echo');
 	}, [wallet, nearConfig]);
 
 	const signOut = useCallback(() => {
@@ -36,7 +36,8 @@ const NearContextProvider = ({ currentUser, nearConfig, wallet, near, nearContra
 				isLoading,
 				setLoading,
         nearContent,
-        contract,
+				contract,
+				wallet
 			}}
 		>
 			{children}

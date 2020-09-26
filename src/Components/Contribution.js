@@ -106,12 +106,17 @@ const Contribution = (props) => {
 			.times(10 ** 24)
 			.toFixed();
 
-		let true_fee = Big(10)
+		let true_fee = Big(1)
 			.times(10 ** 24)
 			.toFixed();	
 		
+		let deposit = Big(inputs.payment + 1)
+			.times(10 ** 24)
+			.toFixed();
+		
 		console.log(true_payment)	
 		console.log(true_fee)	
+		console.log("this is the deposit amount: " + deposit)	
 		
 		let params = {
 			fee_rate: true_fee,
@@ -122,11 +127,12 @@ const Contribution = (props) => {
 			payment: true_payment,
 			message: inputs.message,
 		};
-		console.log(params);
-
+		console.log(nearContext.wallet._connectedAccount);
+		let pay = nearContext.wallet._connectedAccount.sendMoney('anechoic.testnet', deposit);
 		let result = await contract.initiateContribution({ ...params, BOATLOAD_OF_GAS });
 
 		console.log(result);
+		console.log(pay);
 
 		// if (result[0] === )
 
