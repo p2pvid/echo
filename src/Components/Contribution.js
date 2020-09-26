@@ -127,7 +127,7 @@ const Contribution = (props) => {
 			payment: true_payment,
 			message: inputs.message,
 		};
-		console.log(nearContext.wallet._connectedAccount);
+		
 		let pay = nearContext.wallet._connectedAccount.sendMoney('anechoic.testnet', deposit);
 		let result = await contract.initiateContribution({ ...params, BOATLOAD_OF_GAS });
 
