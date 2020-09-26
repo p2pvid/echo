@@ -1,13 +1,35 @@
-import React, { Component, useEffect } from 'react';
+import React, { Component, useEffect, useContext, useState } from 'react';
 import { initContract, login, logout } from '../utils';
 import { MDBJumbotron, MDBBtn, MDBContainer, MDBRow, MDBCol } from 'mdbreact';
 import Link from 'next/link';
 import Layout from '../Components/Layout.js';
 
+import { NearContext } from '../context/NearContext';
+import Big from 'big.js';
+
 const HomePage = () => {
-  
-  useEffect(() => {
-    // window.nearInitPromise = initContract();
+	
+	//get current near data and access to my echo contract
+	const nearContext = useContext(NearContext);
+	const contract = nearContext.contract[0];
+	console.log(contract);
+
+	const [creators, setCreators] = useState()
+	
+	useEffect(async () => {
+		const data = await contract.displayGlobalTiers();
+		console.log(data)
+		// contract.displayGlobalTiers().then ( (tiers) => {
+		// 	console.log(tiers)
+		// });
+
+		// contract
+		// 	.getTiersList({
+		// 		owner: nearContext.user.accountId,
+		// 	})
+		// 	.then((tiers) => {
+		// 		console.log(tiers);
+		// 	});
   })
   
   return (

@@ -21,7 +21,8 @@ export class Tier {
 		public name: string,
 		public description: string,
 		public cost: string, // probably needs to be a u64 check createTier & generateTier in main.ts
-		public contributor_info: Array<string> // public contributions: Array<string>,
+		public contributor_info: Array<string>, // public contributions: Array<string>,
+		public tier_image: string
 	) {
     this.owner = context.sender;
     // this.public_key = context.senderPublicKey
@@ -48,6 +49,20 @@ export class Contribution {
 		this.contributor = context.sender;
 	}
 }
+
+@nearBindgen
+export class Tribute {
+	fee_rate: u128;
+	receiver: string;
+	required_info: string;
+	tier_purchased: string;
+	tier_purchased_index: u128;
+	payment: u128;
+	message: string // public fufillment: string, // public purchase_history: Array<string>, // public total_paid: u64, // public active: bool
+	
+}
+
+
 //Tier Storage
 // store all tiers with a unique id
 export const tiers = new PersistentMap<Uint8Array, Tier>("tiers")
@@ -72,3 +87,7 @@ export const contributionsByContributor = new PersistentMap<string, Contribution
   "contributionsByContributor"
 )
 
+// store all contributions by id
+export const contributionsByReceiver = new PersistentMap<string, ContributionList>(
+  "contributionsByReceiver"
+)

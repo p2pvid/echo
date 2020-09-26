@@ -2,19 +2,25 @@ import React, { Component, useState, useContext, useEffect } from 'react';
 import { MDBContainer, MDBTabPane, MDBTabContent, MDBNav, MDBNavItem, MDBNavLink, MDBIcon, MDBRow, MDBCol,MDBCard, MDBCardBody, MDBInput, MDBBtn } from 'mdbreact';
 import Layout from '../../Components/UserPages/UserLayout';
 import { useRouter } from 'next/router'
+import axios from 'axios';
 
 import { NearContext } from '../../context/NearContext';
+import Big from 'big.js';
+
+const BOATLOAD_OF_GAS = Big(3)
+	.times(10 ** 13)
+	.toFixed();
 
 const Create = (props) => {
-
+	//get current near data and access to my echo contract
 	const nearContext = useContext(NearContext);
-	const contract = nearContext.contract
-	
+	const contract = nearContext.contract[0];
+
 	console.log(contract);
 
 	const [activeTab, setActiveTab] = useState({
-		activeTab: '1'
-	})
+		activeTab: '1',
+	});
 
 	const router = useRouter();
 
@@ -35,6 +41,9 @@ const Create = (props) => {
 		cost: '',
 		description: '',
 		contributor_info: '',
+		image_url: '',
+		url: '',
+		file: '',
 	});
 	const [visible, setVisible] = useState({
 		isVisible: false,
@@ -60,6 +69,9 @@ const Create = (props) => {
 				cost: '',
 				description: '',
 				contributor_info: '',
+				image_url: '',
+				url: '',
+				file: '',
 			});
 		} else {
 			setStatus({
@@ -83,17 +95,93 @@ const Create = (props) => {
 
 	const handleOnSubmit = (e) => {
 		e.preventDefault();
-		setStatus((prevStatus) => ({ ...prevStatus, submitting: true }));
-		axios({
-			method: 'POST',
-			url: 'https://formspree.io/mvowlqbq',
-			data: inputs,
-		})
+		console.log('submitting things');
+		contract
+			.createTier(
+				{
+					name: inputs.name,
+					cost: inputs.cost,
+					description: inputs.description,
+					contributor_info: [inputs.contributor_info],
+					tier_image: inputs.image_url,
+				},
+				BOATLOAD_OF_GAS
+				// Big(donation.value || '0')
+				// 	.times(10 ** 24)
+				// 	.toFixed()
+			)
+			.then(() => {
+				contract
+					.getTiersList({
+						owner: nearContext.user.accountId,
+					})
+					.then((tiers) => {
+						console.log(tiers);
+					});
+			});
+			
+
+		// setStatus((prevStatus) => ({ ...prevStatus, submitting: true }));
+		// axios({
+		// 	method: 'POST',
+		// 	url: 'https://formspree.io/mvowlqbq',
+		// 	data: inputs,
+		// })
+		// 	.then((response) => {
+		// 		handleServerResponse(true, 'Thank you, your message has been submitted.');
+		// 	})
+		// 	.catch((error) => {
+		// 		handleServerResponse(false, error.response.data.error);
+		// 	});
+	};
+
+
+
+	const handleUpload = (ev) => {
+		//
+		//
+		//
+		//THIS IS WHERE YOU SEND TO SKYNET
+		//
+		//
+		//
+
+		let file = uploadInput.files[0];
+		// Split the filename to get the name and type
+		let fileParts = uploadInput.files[0].name.split('.');
+		let fileName = fileParts[0];
+		let fileType = fileParts[1];
+		console.log('Preparing the upload');
+		axios
+			.post('http://localhost:3000/api/sign-s3', {
+				fileName: fileName,
+				fileType: fileType,
+			})
 			.then((response) => {
-				handleServerResponse(true, 'Thank you, your message has been submitted.');
+				var returnData = response.data.data.returnData;
+				var signedRequest = returnData.signedRequest;
+				var url = returnData.url;
+				this.setState({ url: url });
+				console.log('Recieved a signed request ' + signedRequest);
+
+				// Put the fileType in the headers for the upload
+				var options = {
+					headers: {
+						'Content-Type': fileType,
+					},
+				};
+				axios
+					.put(signedRequest, file, options)
+					.then((result) => {
+						console.log('Response from s3');
+						this.setState({ success: true });
+					})
+					.catch((error) => {
+						alert('ERROR ' + JSON.stringify(error));
+					});
 			})
 			.catch((error) => {
-				handleServerResponse(false, error.response.data.error);
+				alert(JSON.stringify(error));
 			});
 	};
 
@@ -121,9 +209,27 @@ const Create = (props) => {
 										onChange={handleOnChange}
 										required
 									/>
+									<label className="mt-3">Tier Image Url</label>
+									<input
+										label="Tier Title"
+										id="image_url"
+										group
+										className="form-control"
+										type="text"
+										value={inputs.image_url}
+										onChange={handleOnChange}
+										required
+									/>
+									<input
+										onChange={handleOnChange}
+										// ref={(ref) => {
+										// 	setInputs.file = ref;
+										// }}
+										type="file"
+									/>
 									<label className="mt-3">Set Price</label>
 									<input
-										id="price"
+										id="cost"
 										label="Price"
 										className="form-control"
 										group
@@ -134,6 +240,7 @@ const Create = (props) => {
 									/>
 									<label className="mt-3">Tier description</label>
 									<textarea
+										id="description"
 										className="form-control"
 										label="Tier description"
 										group
@@ -145,6 +252,7 @@ const Create = (props) => {
 									/>
 									<label className="mt-3">Required Info</label>
 									<textarea
+										id="contributor_info"
 										className="form-control"
 										label="Required Info"
 										group
@@ -154,12 +262,13 @@ const Create = (props) => {
 										onChange={handleOnChange}
 										required
 									/>
+
+									<div className="text-center mb-4 mt-5">
+										<MDBBtn color="danger" type="submit" className="btn-block z-depth-2">
+											Submit
+										</MDBBtn>
+									</div>
 								</form>
-								<div className="text-center mb-4 mt-5">
-									<MDBBtn color="danger" type="button" className="btn-block z-depth-2">
-										Submit
-									</MDBBtn>
-								</div>
 							</MDBCardBody>
 						</MDBCard>
 					</MDBCol>
