@@ -68,7 +68,7 @@ export async function initContract() {
 		// Initializing our contract APIs by contract name and configuration.
 		const contract = await new nearlib.Contract(walletConnection.account(), nearConfig.contractName, {
 			// View methods are read only. They don't modify the state, but usually return some value.
-			viewMethods: ['getTier', 'getTiersList', 'displayGlobalTiers'],
+			viewMethods: ['getTier', 'getTiersList', 'displayGlobalTiers', 'getReceiverContributionsList'],
 			// Change methods can modify the state. But you don't receive the returned value when called.
 			changeMethods: ['createTier', 'deleteTier', 'sendContributionAPI', 'initiateContribution'],
 			// Sender is the account ID to initialize transactions.
