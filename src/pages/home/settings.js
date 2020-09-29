@@ -75,7 +75,7 @@ const Settings = () => {
 							<UserInfo username={currentCreator.name} image={currentCreator.images} tierCount={tiers} />
 						</MDBCol>
 						<MDBCol md="10" className="mx-auto">
-							<MyWares />
+							<MyWares data={currentCreator.tiers} />
 							<Transactions />
 						</MDBCol>
 					</MDBRow>
