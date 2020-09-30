@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
 	MDBRow,
 	MDBCol,
@@ -14,8 +14,15 @@ import {
 	MDBCardTitle,
 	MDBCardText,
 } from 'mdbreact';
+import { NearContext } from '../../context/NearContext';
+import Link from 'next/link';
 
-const PV1 = () => {
+const UserInfo = (props) => {
+
+	const nearContext = useContext(NearContext);
+	console.log(props);
+	console.log(nearContext);
+
 	return (
 		<div id="profile-v1" className="mb-5">
 			<MDBContainer fluid className="mb-5">
@@ -25,10 +32,15 @@ const PV1 = () => {
 							<MDBCard testimonial className="my-5">
 								<MDBCardUp className="indigo lighten-1" />
 								<MDBAvatar className="mx-auto white">
-									<img src="https://mdbootstrap.com/img/Photos/Avatars/img%20%2810%29.jpg" alt="" />
+									<img src={props.image[0]} alt="" />
 								</MDBAvatar>
 								<MDBCardBody>
-									<h4 className="card-title">Anna Doe</h4>
+									<h4 className="card-title">
+										{props.username} <br />
+									</h4>
+									<Link href={'/' + props.username.split('.')[0]} target="_blank">
+										<a target="_blank">My Creator Page</a>
+									</Link>
 									{/* <hr /> */}
 									{/* <p>
 										<MDBIcon icon="quote-left" /> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eos,
@@ -47,7 +59,7 @@ const PV1 = () => {
 									<MDBCardTitle className="text-left">Account</MDBCardTitle>
 									<hr />
 
-									<MDBCardText className="text-left">
+									{/* <MDBCardText className="text-left">
 										<h5 className="mb-3">Recovery Methods</h5>
 										<p>
 											<span className="font-weight-bold">Email:</span> test@test.com
@@ -56,18 +68,27 @@ const PV1 = () => {
 											<span className="font-weight-bold">Seed:</span> Enabled
 										</p>
 									</MDBCardText>
-									<hr />
+									<hr /> */}
 
 									<MDBCardText className="text-left">
-										<h5 className="mb-3">Connected Accounts</h5>
+										<h5 className="mb-3">Connected Wallet</h5>
 										<p>
-											<span className="font-weight-bold">Address</span> JAS89UP345HUISYBFPASDFAOSDFK
+											<span className="font-weight-bold">Near Address</span> {props.username}
 										</p>
+
 										<p>
-											<span className="font-weight-bold">Seed:</span> Enabled
+											<span className="font-weight-bold">Contributions Made</span> coming soon
+										</p>
+
+										<p>
+											{/* <span className="font-weight-bold">Seed:</span> Enabled */}
+											<span className="font-weight-bold">Available Tiers:</span> {Object.keys(props.tierCount).length}
+										</p>
+
+										<p>
+											<span className="font-weight-bold">Contributions Recieved</span> coming soon
 										</p>
 									</MDBCardText>
-									
 								</MDBCardBody>
 							</MDBCard>
 						</MDBCol>
@@ -78,4 +99,4 @@ const PV1 = () => {
 	);
 };
 
-export default PV1;
+export default UserInfo;
