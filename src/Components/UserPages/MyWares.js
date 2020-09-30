@@ -84,7 +84,7 @@ const TableEditablePage = (props) => {
 						<tr>
 							{rows.header
 								? rows.header.map((item, index) => {
-										return <th key={index}>{item.toUpperCase()}</th>;
+										return <th style={{overflow: 'hidden', whiteSpace: 'nowrap'}} key={index}>{item.toUpperCase()}</th>;
 								  })
 								: null}
 						</tr>

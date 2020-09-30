@@ -9,7 +9,8 @@ import MyWares from '../../Components/UserPages/MyWares'
 
 import { NearContext } from '../../context/NearContext';
 import Big from 'big.js';
-const BOATLOAD_OF_GAS = Big(9)
+
+const BOATLOAD_OF_GAS = Big(10)
 	.times(10 ** 14)
 	.toFixed();
 
@@ -44,8 +45,11 @@ const Settings = () => {
 		const creatorInfo = await fillUserData(userTiers, user);
 		setCurrentCreator({ ...creatorInfo });
 	
-		// const recTributes = await contract.getReceiverContributionsList({ receiver: user, BOATLOAD_OF_GAS });
-		// console.log(tributes)
+		( async function getstuff() {
+			const recTributes = await contract.getReceiverContributionsList({ receiver: user, BOATLOAD_OF_GAS});
+			console.log(recTributes);
+		})();
+		
 		return () => {
 		}
 	}, [nearContext])

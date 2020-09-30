@@ -15,27 +15,13 @@ import {
 	MDBCardText,
 } from 'mdbreact';
 import { NearContext } from '../../context/NearContext';
-import Big from 'big.js';
 import Link from 'next/link';
-
-const BOATLOAD_OF_GAS = Big(9)
-	.times(10 ** 14)
-	.toFixed();
 
 const UserInfo = (props) => {
 
 	const nearContext = useContext(NearContext);
 	console.log(props);
 	console.log(nearContext);
-
-	useEffect((props) => {
-		
-		// fillUserData(props.username ,props.images)
-		
-		
-		return () => {
-		}
-	}, [])
 
 	return (
 		<div id="profile-v1" className="mb-5">
