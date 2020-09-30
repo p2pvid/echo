@@ -102,7 +102,7 @@ const Contribution = (props) => {
 		console.log('submitting things');
 		console.log(fee);
 
-		let true_payment = Big(inputs.payment)
+		let true_payment = Big(parseInt(inputs.payment) - 1)
 			.times(10 ** 24)
 			.toFixed();
 
@@ -110,7 +110,7 @@ const Contribution = (props) => {
 			.times(10 ** 24)
 			.toFixed();	
 		
-		let deposit = Big(inputs.payment + 1)
+		let deposit = Big(inputs.payment)
 			.times(10 ** 24)
 			.toFixed();
 		
