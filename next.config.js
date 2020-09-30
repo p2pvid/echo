@@ -20,6 +20,7 @@ module.exports = withPlugins([
 			return config;
 		},
 		exportTrailingSlash: true,
+		distDir: 'build',
 		exportPathMap: function () {
 			return {
 				'/': { page: '/' },
