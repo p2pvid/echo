@@ -4,14 +4,14 @@ function getConfig(env) {
   switch (env) {
 
   case 'production':
-  case 'mainnet':
+  case 'testnet':
     return {
-      networkId: 'mainnet',
-      nodeUrl: 'https://rpc.mainnet.near.org',
+      networkId: 'testnet',
+      nodeUrl: 'https://rpc.testnet.near.org',
       contractName: CONTRACT_NAME,
       walletUrl: 'https://wallet.near.org',
-      helperUrl: 'https://helper.mainnet.near.org',
-      explorerUrl: 'https://explorer.mainnet.near.org',
+      helperUrl: 'https://helper.testnet.near.org',
+      explorerUrl: 'https://explorer.testnet.near.org',
     }
   case 'development':
   case 'testnet':
@@ -23,14 +23,14 @@ function getConfig(env) {
       helperUrl: 'https://helper.testnet.near.org',
       explorerUrl: 'https://explorer.testnet.near.org',
     }
-  case 'betanet':
+  case 'testnet':
     return {
-      networkId: 'betanet',
-      nodeUrl: 'https://rpc.betanet.near.org',
+      networkId: 'testnet',
+      nodeUrl: 'https://rpc.testnet.near.org',
       contractName: CONTRACT_NAME,
-      walletUrl: 'https://wallet.betanet.near.org',
-      helperUrl: 'https://helper.betanet.near.org',
-      explorerUrl: 'https://explorer.betanet.near.org',
+      walletUrl: 'https://wallet.testnet.near.org',
+      helperUrl: 'https://helper.testnet.near.org',
+      explorerUrl: 'https://explorer.testnet.near.org',
     }
   case 'local':
     return {
@@ -48,10 +48,10 @@ function getConfig(env) {
       contractName: CONTRACT_NAME,
       masterAccount: 'test.near',
     }
-  case 'ci-betanet':
+  case 'ci-testnet':
     return {
       networkId: 'shared-test-staging',
-      nodeUrl: 'https://rpc.ci-betanet.near.org',
+      nodeUrl: 'https://rpc.ci-testnet.near.org',
       contractName: CONTRACT_NAME,
       masterAccount: 'test.near',
     }
