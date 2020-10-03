@@ -3,7 +3,8 @@ import { MDBContainer, MDBTabPane, MDBTabContent, MDBNav, MDBNavItem, MDBNavLink
 import Layout from '../../Components/UserPages/UserLayout';
 import { useRouter } from 'next/router'
 import axios from 'axios';
-
+import { toSkynet } from '../../utils'
+import { SkynetClient } from 'skynet-js';
 import { NearContext } from '../../context/NearContext';
 import Big from 'big.js';
 
@@ -21,6 +22,7 @@ const Create = (props) => {
 	//get current near data and access to my echo contract
 	const nearContext = useContext(NearContext);
 	const contract = nearContext.contract[0];
+	const client = new SkynetClient();
 
 	console.log(contract);
 
@@ -30,18 +32,13 @@ const Create = (props) => {
 
 	const router = useRouter();
 
-	useEffect(() => {
-		contract;
-		return () => {
-			cleanup;
-		};
-	}, []);
 
 	const [status, setStatus] = useState({
 		submitted: false,
 		submitting: false,
 		info: { error: false, msg: null },
 	});
+
 	const [inputs, setInputs] = useState({
 		name: '',
 		cost: '',
@@ -51,6 +48,10 @@ const Create = (props) => {
 		url: '',
 		file: '',
 	});
+	
+
+	const [selectedFiles, setSelectedFiles] = useState(undefined);
+
 	const [visible, setVisible] = useState({
 		isVisible: false,
 	});
@@ -100,12 +101,34 @@ const Create = (props) => {
 	};
 
 	const handleOnSubmit = async (e) => {
+<<<<<<< HEAD
 		e.preventDefault();
 
 
 		
 
 
+=======
+		
+		console.log(selectedFiles.file)
+		console.log(selectedFiles.file)
+		
+		let skylink
+		
+		if (selectedFiles.file) {
+			skylink = await toSkynet(selectedFiles.file);
+		} 
+
+		console.log(skylink)
+
+		
+		let link = skylink.toString()
+		setInputs({image_url: link})
+		
+
+
+		console.log('New Skylink: ' + skylink);
+>>>>>>> ae7d8da3319685357f87e7cff1fff452a0ff950d
 		console.log('submitting things');
 
 		console.log("test");
@@ -138,22 +161,16 @@ const Create = (props) => {
 					});
 			});
 			
-
-		// setStatus((prevStatus) => ({ ...prevStatus, submitting: true }));
-		// axios({
-		// 	method: 'POST',
-		// 	url: 'https://formspree.io/mvowlqbq',
-		// 	data: inputs,
-		// })
-		// 	.then((response) => {
-		// 		handleServerResponse(true, 'Thank you, your message has been submitted.');
-		// 	})
-		// 	.catch((error) => {
-		// 		handleServerResponse(false, error.response.data.error);
-		// 	});
 	};
 
+<<<<<<< HEAD
 	
+=======
+	const selectFile = (event) => {
+		// setInputs({file: event.target.files});
+		setSelectedFiles({file: event.target.files});
+	};
+>>>>>>> ae7d8da3319685357f87e7cff1fff452a0ff950d
 
 	const handleUpload = (ev) => {
 		//
@@ -234,7 +251,7 @@ const Create = (props) => {
 										onChange={handleOnChange}
 										required
 									/>
-									<label className="mt-3">Tier Image Url</label>
+									{/* <label className="mt-3">Tier Image Url</label>
 									<input
 										label="Tier Title"
 										id="image_url"
@@ -243,14 +260,23 @@ const Create = (props) => {
 										type="text"
 										value={inputs.image_url}
 										onChange={handleOnChange}
+<<<<<<< HEAD
 										//required
 									/>
+=======
+										required
+									/> */}
+>>>>>>> ae7d8da3319685357f87e7cff1fff452a0ff950d
 									<input
-										onChange={handleOnChange}
+										onChange={selectFile}
 										// ref={(ref) => {
 										// 	setInputs.file = ref;
 										// }}
+<<<<<<< HEAD
 										value={inputs.file}
+=======
+										id='file'
+>>>>>>> ae7d8da3319685357f87e7cff1fff452a0ff950d
 										type="file"
 									/>
 									<label className="mt-3">Set Price</label>
@@ -290,7 +316,7 @@ const Create = (props) => {
 									/>
 
 									<div className="text-center mb-4 mt-5">
-										<MDBBtn color="danger" type="submit" className="btn-block z-depth-2">
+										<MDBBtn color="danger" onClick={handleOnSubmit} className="btn-block z-depth-2">
 											Submit
 										</MDBBtn>
 									</div>
