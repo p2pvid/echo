@@ -1,6 +1,7 @@
 MyEcho 
 ==================
 DEMO: www.myecho.app
+VIDEO: https://gitcoin.co/blog/hack-the-rainbow/
 
 **Abstract.** 
 Centralization is bad for all stakeholders. We’re providing a way to decentralize something the average internet user today will understand. If we do our job right, they won’t be sure they’re using crypto at all.
