@@ -1,6 +1,6 @@
 MyEcho 
 ==================
-DEMO: www.myecho.app
+DEMO: https://myecho.app
 
 VIDEO: https://www.loom.com/share/e4bee56265524731b31f60383d83436c
 
