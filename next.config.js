@@ -21,11 +21,11 @@ module.exports = withPlugins([
 		},
 		exportTrailingSlash: true,
 		distDir: 'build',
-		exportPathMap: function () {
-			return {
-				'/': { page: '/' },
-			};
-		},
+		// exportPathMap: function () {
+		// 	return {
+		// 		'/': { page: '/' },
+		// 	};
+		// },
 	}),
 	withFonts,
 	withImages,
