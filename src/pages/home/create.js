@@ -1,5 +1,5 @@
 import React, { Component, useState, useContext, useEffect } from 'react';
-import { MDBContainer, MDBTabPane, MDBTabContent, MDBNav, MDBNavItem, MDBNavLink, MDBIcon, MDBRow, MDBCol,MDBCard, MDBCardBody, MDBInput, MDBBtn } from 'mdbreact';
+import { toast, ToastContainer, MDBContainer, MDBTabPane, MDBTabContent, MDBNav, MDBNavItem, MDBNavLink, MDBIcon, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBInput, MDBBtn } from 'mdbreact';
 import Layout from '../../Components/UserPages/UserLayout';
 import { useRouter } from 'next/router'
 import axios from 'axios';
@@ -7,6 +7,11 @@ import { toSkynet } from '../../utils'
 import { SkynetClient } from 'skynet-js';
 import { NearContext } from '../../context/NearContext';
 import Big from 'big.js';
+import Link from 'next/link';
+
+//import { toast, ToastContainer, MDBContainer, MDBBtn } from 'mdbreact';
+
+
 
 const BOATLOAD_OF_GAS = Big(3)
 	.times(10 ** 13)
@@ -19,6 +24,48 @@ const Create = (props) => {
 	const client = new SkynetClient();
 
 	console.log(contract);
+
+	const notify = type => {
+
+		toast.success('Successful Submission!', {
+			closeButton: false
+		});
+
+
+		// return () => {
+	    //   console.log("Here!!! notify")
+		//   switch (type) {
+		// 	case 'info':
+		// 	  toast.info('Info message', {
+		// 		closeButton: false
+		// 	  });
+		// 	  break;
+		// 	case 'success':
+		// 	  console.log("Here!!! success notify");
+		// 	  toast.success('Success message', {
+		// 		closeButton: false
+		// 	  });
+			  
+		// 	  break;
+		// 	case 'warning':
+		// 	  toast.warn('Warning message', {
+		// 		closeButton: false
+		// 	  });
+		// 	  break;
+		// 	case 'error':
+		// 	  toast.error('Error message', {
+		// 		closeButton: false
+		// 	  });
+		// 	  break;
+		// 	default:
+		// 	  toast.error('Error message', {
+		// 		closeButton: false
+		// 	  });
+		//   }
+		// };
+	};
+
+
 
 	const [activeTab, setActiveTab] = useState({
 		activeTab: '1',
@@ -94,52 +141,87 @@ const Create = (props) => {
 		});
 	};
 
+	const resetSubmission = async (e) => {
+		setStatus({
+			submitted: false,
+			submitting: false,
+			info: { error: false, msg: null },
+		});
+	}
+
 	const handleOnSubmit = async (e) => {
-		
-		console.log(selectedFiles.file)
-		console.log(selectedFiles.file)
-		
-		let skylink
-		
-		if (selectedFiles.file) {
-			skylink = await toSkynet(selectedFiles.file);
-		} 
 
-		console.log(skylink)
-
+		setStatus({
+			submitting: true
+		});
 		
-		let link = skylink.toString()
-		setInputs({image_url: link})
-		
+		try {
+			console.log(selectedFiles.file)
+			console.log(selectedFiles.file)
+			
+			let skylink
+			
+			if (selectedFiles.file) {
+				skylink = await toSkynet(selectedFiles.file);
+			} 
+
+			console.log(skylink)
+
+			
+			let link = skylink.toString()
+			setInputs({image_url: link})
+			
 
 
-		console.log('New Skylink: ' + skylink);
-		console.log('submitting things');
-		contract
-			.createTier(
-				{
-					name: inputs.name,
-					cost: inputs.cost,
-					description: inputs.description,
-					contributor_info: [inputs.contributor_info],
-					tier_image: inputs.image_url,
-				},
-				BOATLOAD_OF_GAS
-				// Big(donation.value || '0')
-				// 	.times(10 ** 24)
-				// 	.toFixed()
-			)
-			.then(() => {
-				contract
-					.getTiersList({
-						owner: nearContext.user.accountId,
-					})
-					.then((tiers) => {
-						console.log(tiers);
-					});
+			console.log('New Skylink: ' + skylink);
+			console.log('submitting things');
+			contract
+				.createTier(
+					{
+						name: inputs.name,
+						cost: inputs.cost,
+						description: inputs.description,
+						contributor_info: [inputs.contributor_info],
+						tier_image: inputs.image_url,
+					},
+					BOATLOAD_OF_GAS
+					// Big(donation.value || '0')
+					// 	.times(10 ** 24)
+					// 	.toFixed()
+				)
+				.then(() => {
+					contract
+						.getTiersList({
+							owner: nearContext.user.accountId,
+						})
+						.then((tiers) => {
+							console.log("tiers:", tiers);
+							for (const t in tiers){
+								
+								if (tiers[t].name == inputs.name &&
+									tiers[t].cost == inputs.cost &&
+									tiers[t].description == inputs.description){
+									setStatus({
+										submitted: true
+									});
+									notify('success');
+								}
+							} 
+						});
+				});
+		} catch (err){
+			// Do something useful with error..
+
+			setStatus({
+				submitting: false
 			});
+		}
 			
 	};
+
+	// const checkTierSuccess( const arr ){
+		
+	// };
 
 	const selectFile = (event) => {
 		// setInputs({file: event.target.files});
@@ -194,11 +276,13 @@ const Create = (props) => {
 			});
 	};
 
+
 	return (
 		<Layout>
 			<MDBContainer>
 				<MDBRow>
 					<MDBCol md="8" className="mx-auto">
+					{!status.submitted ? (
 						<MDBCard>
 							<div className="header pt-3 k-green-bg">
 								<MDBRow className="d-flex justify-content-start">
@@ -206,6 +290,7 @@ const Create = (props) => {
 								</MDBRow>
 							</div>
 							<MDBCardBody className="mx-4 mt-2">
+							{!status.submitting ? (
 								<form onSubmit={handleOnSubmit}>
 									<label className="mt-3">Tier Title</label>
 									<input
@@ -272,15 +357,56 @@ const Create = (props) => {
 										onChange={handleOnChange}
 										required
 									/>
-
+									
 									<div className="text-center mb-4 mt-5">
 										<MDBBtn color="danger" onClick={handleOnSubmit} className="btn-block z-depth-2">
 											Submit
 										</MDBBtn>
 									</div>
-								</form>
+									
+								</form>) : (
+									<MDBContainer>
+										<MDBRow>
+											<MDBCol className="mx-auto text-center" style={{ marginTop: '45vh' }}>
+												<div className="spinner-grow spinner-grow-big mx-auto text-center k-green" role="status">
+													<span className="sr-only">Loading...</span>
+												</div>
+											</MDBCol>
+										</MDBRow>
+									</MDBContainer>
+								)}
+								
+							</MDBCardBody>
+							
+						</MDBCard>
+					) : (
+						<MDBCard>
+							<div className="header pt-3 k-green-bg">
+								<MDBRow className="d-flex justify-content-start">
+									<h3 className="text-white mt-3 mb-4 pb-1 mx-5 mx-auto">Congratulations!</h3>
+								</MDBRow>
+							</div>
+							<MDBCardBody className="mx-4 mt-2">
+							<div className="text-center mb-4 mt-5">
+
+										<Link href={`/${nearContext.user.accountId}`}>
+											<a>
+												<MDBBtn color="success-color-dark"> Check Published Tiers</MDBBtn>
+											</a>
+										</Link>
+										<MDBBtn color="primary-color-dark" onClick={resetSubmission} className="btn-block z-depth-2">
+											Create New Tier
+										</MDBBtn>
+									</div>
 							</MDBCardBody>
 						</MDBCard>
+					)}
+					<ToastContainer
+										hideProgressBar={true}
+										newestOnTop={true}
+										autoClose={10000}
+					/>
+					
 					</MDBCol>
 				</MDBRow>
 			</MDBContainer>
@@ -361,6 +487,7 @@ const Create = (props) => {
 		 */}
 		</Layout>
 	);
+	
 }
 
 export default Create
