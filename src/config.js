@@ -1,4 +1,4 @@
-const CONTRACT_NAME = process.env.CONTRACT_NAME ||'anechoic.testnet'
+const CONTRACT_NAME = process.env.CONTRACT_NAME ||'pogo.testnet'
 
 function getConfig(env) {
   switch (env) {
